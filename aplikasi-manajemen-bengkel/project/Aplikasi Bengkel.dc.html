@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+<template id="__bundler_thumbnail" data-bg-color="#2158D8">
+<svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+<rect width="1200" height="800" fill="#2158D8"/>
+<rect x="470" y="250" width="260" height="360" rx="46" fill="#0e1420"/>
+<rect x="486" y="266" width="228" height="328" rx="32" fill="#F4F6FB"/>
+<rect x="486" y="266" width="228" height="52" rx="0" fill="#ffffff"/>
+<rect x="510" y="286" width="70" height="12" rx="6" fill="#c8d0dd"/>
+<rect x="510" y="345" width="180" height="86" rx="16" fill="#2158D8"/>
+<rect x="524" y="365" width="90" height="12" rx="6" fill="#ffffff" opacity="0.9"/>
+<rect x="524" y="388" width="140" height="10" rx="5" fill="#ffffff" opacity="0.55"/>
+<rect x="524" y="408" width="120" height="8" rx="4" fill="#ffffff" opacity="0.4"/>
+<rect x="510" y="450" width="180" height="46" rx="12" fill="#ffffff"/>
+<rect x="510" y="508" width="180" height="46" rx="12" fill="#ffffff"/>
+<g stroke="#2158D8" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round" transform="translate(560,610) scale(1.5)">
+<circle cx="0" cy="6" r="4.5"/><circle cx="24" cy="6" r="4.5"/><path d="M4 6h9l5-10h6"/><path d="M-6 -2h5l3.5 5"/>
+</g>
+</svg>
+</template>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:radial-gradient(120% 90% at 50% 0%,#eef2f9 0%,#e6eaf2 55%,#dfe4ee 100%);-webkit-font-smoothing:antialiased}
+.scr::-webkit-scrollbar{width:0;display:none}
+.scr{scrollbar-width:none}
+input,textarea,select,button{font-family:inherit}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--pri,#2158D8)!important}
+@keyframes fu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes pop{from{opacity:0;transform:translate(-50%,6px)}to{opacity:1;transform:translate(-50%,0)}}
+</style>
+</helmet>
+
+<div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:26px 16px 40px;gap:16px;--pri:#2158D8;--r:18px">
+
+  <!-- role toggle -->
+  <div style="display:flex;align-items:center;gap:12px">
+    <div style="font-weight:800;font-size:15px;color:#1a2233;letter-spacing:-.2px">BengkelKu</div>
+    <div style="display:flex;background:#e0e5ef;border-radius:14px;padding:4px;width:240px">
+      <button onClick="{{ setRoleUser }}" style="{{ roleUserStyle }}">Tampilan User</button>
+      <button onClick="{{ setRoleBengkel }}" style="{{ roleBengkelStyle }}">Tampilan Bengkel</button>
+    </div>
+  </div>
+
+  <!-- phone -->
+  <div style="width:392px;height:812px;background:#0e1420;border-radius:46px;padding:11px;box-shadow:0 28px 70px -20px rgba(20,30,60,.5),0 8px 22px rgba(20,30,60,.2)">
+    <div style="width:100%;height:100%;background:#F4F6FB;border-radius:36px;overflow:hidden;display:flex;flex-direction:column;position:relative">
+
+      <!-- status bar -->
+      <div style="height:40px;flex-shrink:0;background:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 22px;z-index:5">
+        <span style="font-size:13.5px;font-weight:700;color:#101828">09.41</span>
+        <div style="display:flex;align-items:center;gap:6px;color:#101828">
+          <svg width="17" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="7" width="3" height="5" rx="1"/><rect x="5" y="4" width="3" height="8" rx="1"/><rect x="10" y="1.5" width="3" height="10.5" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>
+          <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M1 4.2C4.8 1 11.2 1 15 4.2M3.3 6.7c2.6-2.1 6.8-2.1 9.4 0M8 9.6l0 .01" stroke-linecap="round"/></svg>
+          <svg width="24" height="12" viewBox="0 0 26 12" fill="none"><rect x="1" y="1" width="21" height="10" rx="3" stroke="currentColor" stroke-width="1.3" opacity=".5"/><rect x="3" y="3" width="15" height="6" rx="1.5" fill="currentColor"/><rect x="23.5" y="4" width="2" height="4" rx="1" fill="currentColor" opacity=".5"/></svg>
+        </div>
+      </div>
+
+      <!-- top bar -->
+      <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:#fff;border-bottom:1px solid #EEF1F6;flex-shrink:0;z-index:4">
+        <sc-if value="{{ showBack }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ back }}" style="border:none;background:#F1F4F9;width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#101828;flex-shrink:0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+        </sc-if>
+        <sc-if value="{{ showLogo }}" hint-placeholder-val="{{ true }}">
+          <div style="width:38px;height:38px;border-radius:12px;background:var(--pri,#2158D8);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:17px;flex-shrink:0">B</div>
+        </sc-if>
+        <div style="min-width:0;flex:1">
+          <div style="font-weight:800;font-size:16.5px;color:#101828;line-height:1.15;letter-spacing:-.2px">{{ topTitle }}</div>
+          <sc-if value="{{ topSub }}" hint-placeholder-val="{{ true }}"><div style="font-size:12px;color:#8A94A6;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ topSub }}</div></sc-if>
+        </div>
+        <sc-if value="{{ rightBell }}" hint-placeholder-val="{{ true }}">
+          <button style="border:none;background:#F1F4F9;width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#101828;flex-shrink:0;position:relative"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10.5 20a1.8 1.8 0 0 0 3 0"/></svg><span style="position:absolute;top:8px;right:9px;width:7px;height:7px;background:#E8890C;border-radius:50%;border:1.5px solid #F1F4F9"></span></button>
+        </sc-if>
+        <sc-if value="{{ rightAdd }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ togglePartForm }}" style="border:none;background:var(--pri,#2158D8);width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;flex-shrink:0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+        </sc-if>
+      </div>
+
+      <!-- content -->
+      <div class="scr" style="flex:1;overflow-y:auto;overflow-x:hidden">
+
+        <!-- ============ USER: BERANDA ============ -->
+        <sc-if value="{{ uBeranda }}" hint-placeholder-val="{{ true }}">
+          <div style="padding:16px 16px 100px;display:flex;flex-direction:column;gap:18px;animation:fu .3s ease">
+            <sc-if value="{{ hasActive }}" hint-placeholder-val="{{ true }}">
+              <div onClick="{{ openActive }}" style="background:linear-gradient(135deg,var(--pri,#2158D8),#16357f);border-radius:var(--r,18px);padding:18px;color:#fff;cursor:pointer;box-shadow:0 10px 26px -8px color-mix(in srgb,var(--pri,#2158D8) 55%,transparent)">
+                <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:11.5px;letter-spacing:.4px;text-transform:uppercase;font-weight:700;opacity:.82">Service Berjalan</span><span style="{{ activeBadge.style }}">{{ activeBadge.label }}</span></div>
+                <div style="font-weight:800;font-size:18px;margin-top:9px">{{ activeJenis }}</div>
+                <div style="font-size:12.5px;opacity:.9;margin-top:3px">{{ activeVehLabel }}</div>
+                <div style="height:6px;background:rgba(255,255,255,.24);border-radius:99px;margin-top:15px;overflow:hidden"><div style="height:100%;border-radius:99px;background:#fff;width:{{ activePct }}%"></div></div>
+                <div style="font-size:11.5px;opacity:.9;margin-top:7px">{{ activeStepLabel }}</div>
+              </div>
+            </sc-if>
+
+            <button onClick="{{ openFlowBtn }}" style="display:flex;align-items:center;gap:13px;background:#fff;border:1px solid #ECEFF4;border-radius:var(--r,18px);padding:15px;cursor:pointer;text-align:left;width:100%">
+              <div style="width:46px;height:46px;border-radius:14px;background:color-mix(in srgb,var(--pri,#2158D8) 12%,#fff);display:flex;align-items:center;justify-content:center;color:var(--pri,#2158D8);flex-shrink:0"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-2.4z"/></svg></div>
+              <div style="flex:1"><div style="font-weight:800;font-size:15px;color:#101828">Ajukan Service</div><div style="font-size:12.5px;color:#8A94A6;margin-top:1px">Booking servis ke bengkel pilihanmu</div></div>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C2CAD6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+            </button>
+
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:11px"><div style="font-weight:800;font-size:15.5px;color:#101828">Perawatan Perlu Dicek</div><button onClick="{{ goPerawatan }}" style="border:none;background:none;color:var(--pri,#2158D8);font-weight:700;font-size:12.5px;cursor:pointer">Lihat semua</button></div>
+              <div style="display:flex;flex-direction:column;gap:10px">
+                <sc-for list="{{ alertRows }}" as="a" hint-placeholder-count="2">
+                  <div onClick="{{ a.open }}" style="display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #ECEFF4;border-radius:14px;padding:12px 14px;cursor:pointer">
+                    <div style="width:40px;height:40px;border-radius:12px;background:#F4F6FB;display:flex;align-items:center;justify-content:center;color:var(--pri,#2158D8);flex-shrink:0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-2.4z"/></svg></div>
+                    <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:13.5px;color:#101828">{{ a.nama }}</div><div style="font-size:12px;color:#8A94A6;margin-top:1px">{{ a.veh }} · {{ a.nextLabel }}</div></div>
+                    <span style="{{ a.badge.style }}">{{ a.badge.label }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:11px"><div style="font-weight:800;font-size:15.5px;color:#101828">Kendaraan Saya</div><button onClick="{{ goKendaraan }}" style="border:none;background:none;color:var(--pri,#2158D8);font-weight:700;font-size:12.5px;cursor:pointer">Lihat semua</button></div>
+              <div style="display:flex;flex-direction:column;gap:12px">
+                <sc-for list="{{ vehicleRows }}" as="v" hint-placeholder-count="2">
+                  <div onClick="{{ v.open }}" style="background:#fff;border:1px solid #ECEFF4;border-radius:var(--r,18px);overflow:hidden;cursor:pointer">
+                    <div style="display:flex;gap:13px;padding:14px 15px;align-items:center">
+                      <div style="width:52px;height:52px;border-radius:15px;background:color-mix(in srgb,var(--pri,#2158D8) 10%,#fff);display:flex;align-items:center;justify-content:center;color:var(--pri,#2158D8);flex-shrink:0"><svg width="27" height="27" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="17" r="2.6"/><circle cx="18" cy="17" r="2.6"/><path d="M8.6 17h5.4l3-6.2H20"/><path d="M4 11h3.4l2.2 3.2"/><path d="M13.5 6.5h2.8l1 2.2"/></svg></div>
+                      <div style="flex:1;min-width:0"><div style="font-weight:800;font-size:15px;color:#101828">{{ v.nama }}</div><div style="font-size:12.5px;color:#8A94A6;margin-top:2px">{{ v.plat }} · {{ v.tahun }} · {{ v.kmFmt }}</div></div>
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C2CAD6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:8px;padding:9px 15px;border-top:1px solid #F1F3F8;background:#FAFBFF"><span style="{{ v.dueDot }}"></span><span style="{{ v.dueColor }}">{{ v.dueLabel }}</span></div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- ============ USER: KENDARAAN ============ -->
+        <sc-if value="{{ uKendaraan }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:16px 16px 100px;display:flex;flex-direction:column;gap:12px;animation:fu .3s ease">
+            <sc-for list="{{ vehicleRows }}" as="v" hint-placeholder-count="2">
+              <div onClick="{{ v.open }}" style="background:#fff;border:1px solid #ECEFF4;border-radius:var(--r,18px);overflow:hidden;cursor:pointer">
+                <div style="display:flex;gap:13px;padding:16px;align-items:center">
+                  <div style="width:56px;height:56px;border-radius:16px;background:color-mix(in srgb,var(--pri,#2158D8) 10%,#fff);display:flex;align-items:center;justify-content:center;color:var(--pri,#2158D8);flex-shrink:0"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="17" r="2.6"/><circle cx="18" cy="17" r="2.6"/><path d="M8.6 17h5.4l3-6.2H20"/><path d="M4 11h3.4l2.2 3.2"/><path d="M13.5 6.5h2.8l1 2.2"/></svg></div>
+                  <div style="flex:1;min-width:0"><div style="font-weight:800;font-size:16px;color:#101828">{{ v.nama }}</div><div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap"><span style="background:#F1F4F9;color:#475467;font-size:11.5px;font-weight:700;padding:3px 8px;border-radius:7px">{{ v.plat }}</span><span style="background:#F1F4F9;color:#475467;font-size:11.5px;font-weight:600;padding:3px 8px;border-radius:7px">{{ v.tahun }} · {{ v.warna }}</span></div><div style="font-size:12.5px;color:#8A94A6;margin-top:7px">Odometer {{ v.kmFmt }}</div></div>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C2CAD6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;padding:10px 16px;border-top:1px solid #F1F3F8;background:#FAFBFF"><span style="{{ v.dueDot }}"></span><span style="{{ v.dueColor }}">{{ v.dueLabel }}</span></div>
+              </div>
+            </sc-for>
+            <button onClick="{{ addVehToast }}" style="border:1.5px dashed #C9D2E0;background:transparent;border-radius:var(--r,18px);padding:15px;color:#667085;font-weight:700;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Tambah Kendaraan</button>
+          </div>
+        </sc-if>
+
+        <!-- ============ USER: VEHICLE DETAIL ============ -->
+        <sc-if value="{{ uVehDetail }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:16px 16px 110px;display:flex;flex-direction:column;gap:16px;animation:fu .3s ease">
+            <div style="background:#fff;border:1px solid #ECEFF4;border-radius:var(--r,18px);padding:18px">
+              <div style="display:flex;gap:14px;align-items:center">
+                <div style="width:60px;height:60px;border-radius:17px;background:color-mix(in srgb,var(--pri,#2158D8) 10%,#fff);display:flex;align-items:center;justify-content:center;color:var(--pri,#2158D8);flex-shrink:0"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="17" r="2.6"/><circle cx="18" cy="17" r="2.6"/><path d="M8.6 17h5.4l3-6.2H20"/><path d="M4 11h3.4l2.2 3.2"/><path d="M13.5 6.5h2.8l1 2.2"/></svg></div>
+                <div><div style="font-weight:800;font-size:18px;color:#101828">{{ vehName }}</div><div style="font-size:13px;color:#8A94A6;margin-top:2px">{{ vehPlat }} · {{ vehWarna }}</div></div>
+              </div>
+              <div style="margin-top:16px;background:#FAFBFF;border:1px solid #F1F3F8;border-radius:14px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between"><div><div style="font-size:11.5px;color:#8A94A6;font-weight:600">Odometer saat ini</div><div style="font-weight:800;font-size:22px;color:#101828;margin-top:2px">{{ vehKmFmt }}</div></div><div style="width:44px;height:44px;border-radius:12px;background:#fff;border:1px solid #EEF1F6;display:flex;align-items:center;justify-content:center;color:var(--pri,#2158D8)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 13l3-2.5M12 5V3M5.5 6.5 4 5"/></svg></div></div>
+            </div>
+
+            <div>
+              <div style="font-weight:800;font-size:15px;color:#101828;margin-bottom:10px">Spesifikasi</div>
+              <div style="background:#fff;border:1px solid #ECEFF4;border-radius:var(--r,18px);overflow:hidden">
+                <sc-for list="{{ specRows }}" as="r" hint-placeholder-count="6">
+                  <div style="display:flex;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #F3F5F9"><span style="font-size:13.5px;color:#8A94A6">{{ r.k }}</span><span style="font-size:13.5px;color:#101828;font-weight:700">{{ r.v }}</span></div>
+                </sc-for>
+              </div>
+            </div>
+
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px"><div style="font-weight:800;font-size:15px;color:#101828">Perawatan Rutin</div><button onClick="{{ goPerawatanFromVeh }}" style="border:none;background:none;color:var(--pri,#2158D8);font-weight:700;font-size:12.5px;cursor:pointer">Lihat semua</button></div>
+              <div style="display:flex;flex-direction:column;gap:10px">
+                <sc-for list="{{ vehMaintTop }}" as="m" hint-placeholder-count="3">
+                  <div style="background:#fff;border:1px solid #ECEFF4;border-radius:14px;padding:13px 15px">
+                    <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-weight:700;font-size:13.5px;color:#101828">{{ m.nama }}</span><span style="{{ m.badge.style }}">{{ m.badge.label }}</span></div>
+                    <div style="height:6px;background:#EEF1F6;border-radius:99px;margin-top:10px;overflow:hidden"><div style="{{ m.barStyle }}"></div></div>
+                    <div style="display:flex;justify-content:space-between;margin-top:7px"><span style="font-size:11.5px;color:#8A94A6">{{ m.intervalLabel }}</span><span style="font-size:11.5px;color:#475467;font-weight:600">{{ m.nextLabel }}</span></div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <button onClick="{{ openFlowBtn }}" style="background:var(--pri,#2158D8);border:none;border-radius:15px;padding:15px;color:#fff;font-weight:800;font-size:15px;cursor:pointer;box-shadow:0 8px 20px -6px color-mix(in srgb,var(--pri,#2158D8) 60%,transparent)">Ajukan Service Kendaraan Ini</button>
+          </div>
+        </sc-if>
+
+        <!-- ============ USER: BENGKEL LIST ============ -->
+        <sc-if value="{{ uBengkel }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:16px 16px 100px;display:flex;flex-direction:column;gap:12px;animation:fu .3s ease">
+            <sc-for list="{{ bengkelRows }}" as="b" hint-placeholder-count="3">
+              <div onClick="{{ b.open }}" style="background:#fff;border:1px solid #ECEFF4;border-radius:var(--r,18px);padding:16px;cursor:pointer">
+                <div style="display:flex;gap:13px">
+                  <div style="width:52px;height:52px;border-radius:15px;background:color-mix(in srgb,var(--pri,#2158D8) 10%,#fff);display:flex;align-items:center;justify-content:center;color:var(--pri,#2158D8);flex-shrink:0"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-4.5h15L21 9"/><path d="M4 9v10h16V9"/><path d="M9 19v-5h6v5"/><path d="M3 9h18"/></svg></div>
+                  <div style="flex:1;min-width:0">
+                    <div style="display:flex;align-items:center;gap:6px"><span style="font-weight:800;font-size:15.5px;color:#101828">{{ b.nama }}</span><span style="{{ b.statusStyle }}">{{ b.statusLabel }}</span></div>
+                    <div style="font-size:12.5px;color:#8A94A6;margin-top:3px">{{ b.spesialis }}</div>
+                    <div style="display:flex;align-items:center;gap:12px;margin-top:9px">
+                      <span style="display:inline-flex;align-items:center;gap:4px;font-size:12.5px;font-weight:700;color:#101828"><svg width="15" height="15" viewBox="0 0 24 24" fill="#F5A623"><path d="M12 2l2.9 6 6.6.6-5 4.3 1.5 6.5L12 16.9 6 19.9l1.5-6.5-5-4.3 6.6-.6z"/></svg>{{ b.ratingLabel }}</span>
+                      <span style="font-size:12.5px;color:#8A94A6">{{ b.jarak }}</span>
+                      <span style="font-size:12.5px;color:#8A94A6">{{ b.jam }}</span>
+                    </div>
+                  </div>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C2CAD6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <!-- ============ USER: BENGKEL DETAIL + SPAREPART ============ -->
+        <sc-if value="{{ uBengkelDetail }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:16px 16px 110px;display:flex;flex-direction:column;gap:16px;animation:fu .3s ease">
+            <div style="background:#fff;border:1px solid #ECEFF4;border-radius:var(--r,18px);padding:18px">
+              <div style="font-weight:800;font-size:18px;color:#101828">{{ bkName }}</div>
+              <div style="font-size:13px;color:#8A94A6;margin-top:2px">{{ bkSpesialis }}</div>
+              <div style="display:flex;align-items:center;gap:14px;margin-top:12px">
+                <span style="display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:800;color:#101828"><svg width="16" height="16" viewBox="0 0 24 24" fill="#F5A623"><path d="M12 2l2.9 6 6.6.6-5 4.3 1.5 6.5L12 16.9 6 19.9l1.5-6.5-5-4.3 6.6-.6z"/></svg>{{ bkRating }}</span>
+                <span style="font-size:12.5px;color:#8A94A6">{{ bkUlasan }} ulasan</span>
+                <span style="{{ bkStatusStyle }}">{{ bkStatusLabel }}</span>
+              </div>
+              <div style="display:flex;gap:9px;margin-top:14px;padding-top:14px;border-top:1px solid #F1F3F8;font-size:13px;color:#475467"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8A94A6" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg><span>{{ bkAlamat }} · {{ bkJarak }} · Buka {{ bkJam }}</span></div>
+              <div style="display:flex;gap:10px;margin-top:14px">
+                <button onClick="{{ openFlowBtn }}" style="flex:1;background:var(--pri,#2158D8);border:none;border-radius:13px;padding:13px;color:#fff;font-weight:800;font-size:14px;cursor:pointer">Ajukan Service</button>
+                <button onClick="{{ hubungiToast }}" style="background:#F1F4F9;border:none;border-radius:13px;padding:13px 16px;color:#101828;font-weight:700;font-size:14px;cursor:pointer">Hubungi</button>
+              </div>
+            </div>
+
+            <div>
+              <div style="font-weight:800;font-size:15px;color:#101828;margin-bottom:10px">Katalog Sparepart &amp; Harga</div>
+              <sc-if value="{{ selBengkelHasParts }}" hint-placeholder-val="{{ true }}">
+                <div style="background:#fff;border:1px solid #ECEFF4;border-radius:var(--r,18px);overflow:hidden">
+                  <sc-for list="{{ bengkelPartRows }}" as="p" hint-placeholder-count="6">
+                    <div style="display:flex;align-items:center;gap:12px;padding:13px 16px;border-bottom:1px solid #F3F5F9">
+                      <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:13.5px;color:#101828">{{ p.nama }}</div><div style="display:flex;align-items:center;gap:8px;margin-top:3px"><span style="font-size:11.5px;color:#8A94A6">{{ p.kat }}</span><span style="{{ p.stokStyle }}">· {{ p.stokLabel }}</span></div></div>
+                      <div style="font-weight:800;font-size:14px;color:#101828;white-space:nowrap">{{ p.hargaFmt }}</div>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+              <sc-if value="{{ selBengkelHasParts }}" hint-placeholder-val="{{ false }}"></sc-if>
+              <sc-if value="{{ showLogo }}" hint-placeholder-val="{{ false }}"></sc-if>
+              <sc-if value="{{ uBengkelDetail }}" hint-placeholder-val="{{ false }}"></sc-if>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- ============ USER: HISTORI LIST ============ -->
+        <sc-if value="{{ uHistori }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:16px 16px 100px;display:flex;flex-direction:column;gap:12px;animation:fu .3s ease">
+            <sc-for list="{{ historyRows }}" as="h" hint-placeholder-count="4">
+              <div onClick="{{ h.open }}" style="background:#fff;border:1px solid #ECEFF4;border-radius:var(--r,18px);padding:15px;cursor:pointer">
+                <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:11.5px;font-weight:700;color:#98A2B3;letter-spacing:.3px">{{ h.id }}</span><span style="{{ h.badge.style }}">{{ h.badge.label }}</span></div>
+                <div style="font-weight:800;font-size:15px;color:#101828;margin-top:7px">{{ h.jenis }}</div>
+                <div style="font-size:12.5px;color:#8A94A6;margin-top:2px">{{ h.vehLabel }}</div>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-top:11px;padding-top:11px;border-top:1px solid #F3F5F9"><span style="font-size:12.5px;color:#8A94A6">{{ h.tanggal }} · {{ h.bengkelName }}</span><span style="font-weight:800;font-size:13.5px;color:#101828">{{ h.biayaFmt }}</span></div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <!-- ============ USER: HISTORI DETAIL (+ SARAN) ============ -->
+        <sc-if value="{{ uHistoriDetail }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:16px 16px 100px;display:flex;flex-direction:column;gap:16px;animation:fu .3s ease">
+            <div style="background:#fff;border:1px solid #ECEFF4;border-radius:var(--r,18px);padding:18px">
+              <div style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-weight:800;font-size:16px;color:#101828">{{ svcJenis }}</div><div style="font-size:12.5px;color:#8A94A6;margin-top:2px">{{ svcVehLabel }}</div></div><span style="{{ svcBadge.style }}">{{ svcBadge.label }}</span></div>
+              <div style="margin-top:16px;display:flex;flex-direction:column;gap:2px">
+                <sc-for list="{{ svcTimeline }}" as="t" hint-placeholder-count="4">
+                  <div style="display:flex;gap:12px">
+                    <div style="display:flex;flex-direction:column;align-items:center"><div style="{{ t.dotStyle }}">{{ t.num }}</div><sc-if value="{{ t.isLast }}" hint-placeholder-val="{{ false }}"></sc-if><div style="{{ t.lineStyle }}"></div></div>
+                    <div style="{{ t.textStyle }};padding-top:3px;padding-bottom:12px">{{ t.label }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <div style="background:#fff;border:1px solid #ECEFF4;border-radius:var(--r,18px);overflow:hidden">
+              <div style="padding:13px 16px;font-weight:800;font-size:14px;color:#101828;border-bottom:1px solid #F3F5F9">Informasi Service</div>
+              <div style="display:flex;justify-content:space-between;padding:11px 16px;border-bottom:1px solid #F3F5F9"><span style="font-size:13px;color:#8A94A6">Bengkel</span><span style="font-size:13px;color:#101828;font-weight:700">{{ svcBengkelName }}</span></div>
+              <div style="display:flex;justify-content:space-between;padding:11px 16px;border-bottom:1px solid #F3F5F9"><span style="font-size:13px;color:#8A94A6">Jadwal</span><span style="font-size:13px;color:#101828;font-weight:700">{{ svcJadwal }}</span></div>
+              <div style="padding:11px 16px"><div style="font-size:13px;color:#8A94A6">Keluhan</div><div style="font-size:13px;color:#101828;margin-top:4px;line-height:1.5">{{ svcKeluhan }}</div></div>
+            </div>
+
+            <sc-if value="{{ svcHasItems }}" hint-placeholder-val="{{ false }}">
+              <div style="background:#fff;border:1px solid #ECEFF4;border-radius:var(--r,18px);overflow:hidden">
+                <div style="padding:13px 16px;font-weight:800;font-size:14px;color:#101828;border-bottom:1px solid #F3F5F9">Rincian Biaya</div>
+                <sc-for list="{{ svcItemsRows }}" as="i" hint-placeholder-count="2">
+                  <div style="display:flex;justify-content:space-between;padding:11px 16px;border-bottom:1px solid #F3F5F9"><span style="font-size:13px;color:#475467">{{ i.qtyLabel }} {{ i.nama }}</span><span style="font-size:13px;color:#101828;font-weight:700">{{ i.hargaFmt }}</span></div>
+                </sc-for>
+                <div style="display:flex;justify-content:space-between;padding:14px 16px;background:#FAFBFF"><span style="font-size:14px;color:#101828;font-weight:800">Total</span><span style="font-size:15px;color:var(--pri,#2158D8);font-weight:800">{{ svcTotalFmt }}</span></div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ svcHasSaran }}" hint-placeholder-val="{{ false }}">
+              <div style="background:linear-gradient(135deg,#FFF8ED,#FFF3E0);border:1px solid #FCE3BB;border-radius:var(--r,18px);padding:17px">
+                <div style="display:flex;align-items:center;gap:9px"><div style="width:34px;height:34px;border-radius:10px;background:#FBE3B8;display:flex;align-items:center;justify-content:center;color:#B25E09;flex-shrink:0"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.4 1 2.5h6c0-1.1.3-1.8 1-2.5A6 6 0 0 0 12 3z"/></svg></div><div style="font-weight:800;font-size:14.5px;color:#7A4405">Saran dari Bengkel</div></div>
+                <div style="font-size:13.5px;color:#6B4A18;line-height:1.6;margin-top:11px">{{ svcSaran }}</div>
+                <div style="display:inline-flex;align-items:center;gap:6px;margin-top:13px;background:#fff;border:1px solid #FADFB2;border-radius:10px;padding:7px 11px"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#B25E09" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg><span style="font-size:12.5px;font-weight:700;color:#7A4405">Rekomendasi tindak lanjut: {{ svcSaranBulan }}</span></div>
+              </div>
+            </sc-if>
+          </div>
+        </sc-if>
+
+        <!-- ============ USER: PERAWATAN RUTIN ============ -->
+        <sc-if value="{{ uPerawatan }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:16px 16px 100px;display:flex;flex-direction:column;gap:13px;animation:fu .3s ease">
+            <div style="background:color-mix(in srgb,var(--pri,#2158D8) 8%,#fff);border:1px solid color-mix(in srgb,var(--pri,#2158D8) 18%,#fff);border-radius:14px;padding:13px 15px;display:flex;align-items:center;gap:11px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--pri,#2158D8)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 2"/></svg><span style="font-size:12.5px;color:#3a4a63;line-height:1.5">Jadwal berbasis <b>jarak tempuh (km) &amp; waktu</b>. Odometer saat ini <b>{{ vehKmFmt }}</b>.</span></div>
+            <sc-for list="{{ vehMaint }}" as="m" hint-placeholder-count="5">
+              <div style="background:#fff;border:1px solid #ECEFF4;border-radius:var(--r,18px);padding:15px">
+                <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-weight:800;font-size:14.5px;color:#101828">{{ m.nama }}</span><span style="{{ m.badge.style }}">{{ m.badge.label }}</span></div>
+                <div style="height:7px;background:#EEF1F6;border-radius:99px;margin-top:12px;overflow:hidden"><div style="{{ m.barStyle }}"></div></div>
+                <div style="display:flex;justify-content:space-between;margin-top:9px"><span style="font-size:12px;color:#8A94A6">{{ m.intervalLabel }}</span><span style="font-size:12px;color:#475467;font-weight:700">{{ m.nextLabel }}</span></div>
+                <div style="font-size:11.5px;color:#98A2B3;margin-top:4px">{{ m.lastLabel }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <!-- ============ USER: FLOW (AJUKAN SERVICE) ============ -->
+        <sc-if value="{{ uFlow }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;height:100%;animation:fu .3s ease">
+            <sc-if value="{{ flowS4 }}" hint-placeholder-val="{{ false }}"></sc-if>
+            <sc-if value="{{ flowS1 }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;align-items:flex-start;padding:16px 24px 6px"><sc-for list="{{ wizardRows }}" as="w" hint-placeholder-count="3"><div style="display:flex;flex-direction:column;align-items:center"><div style="{{ w.dotStyle }}">{{ w.num }}</div><span style="{{ w.labelStyle }}">{{ w.label }}</span></div><sc-if value="{{ w.showLine }}" hint-placeholder-val="{{ true }}"><div style="{{ w.lineStyle }}"></div></sc-if></sc-for></div>
+              <div class="scr" style="flex:1;overflow-y:auto;padding:12px 16px 16px">
+                <div style="font-weight:800;font-size:15px;color:#101828;margin-bottom:12px">Pilih Kendaraan</div>
+                <div style="display:flex;flex-direction:column;gap:11px">
+                  <sc-for list="{{ flowVehRows }}" as="v" hint-placeholder-count="2">
+                    <div onClick="{{ v.pick }}" style="{{ v.selStyle }}">
+                      <div style="width:44px;height:44px;border-radius:13px;background:color-mix(in srgb,var(--pri,#2158D8) 10%,#fff);display:flex;align-items:center;justify-content:center;color:var(--pri,#2158D8);flex-shrink:0"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="17" r="2.6"/><circle cx="18" cy="17" r="2.6"/><path d="M8.6 17h5.4l3-6.2H20"/><path d="M4 11h3.4l2.2 3.2"/></svg></div>
+                      <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:14px;color:#101828">{{ v.nama }}</div><div style="font-size:12px;color:#8A94A6;margin-top:1px">{{ v.plat }} · {{ v.kmFmt }}</div></div>
+                      <div style="{{ v.checkStyle }}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ flowS2 }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;align-items:flex-start;padding:16px 24px 6px"><sc-for list="{{ wizardRows }}" as="w" hint-placeholder-count="3"><div style="display:flex;flex-direction:column;align-items:center"><div style="{{ w.dotStyle }}">{{ w.num }}</div><span style="{{ w.labelStyle }}">{{ w.label }}</span></div><sc-if value="{{ w.showLine }}" hint-placeholder-val="{{ true }}"><div style="{{ w.lineStyle }}"></div></sc-if></sc-for></div>
+              <div class="scr" style="flex:1;overflow-y:auto;padding:12px 16px 16px;display:flex;flex-direction:column;gap:16px">
+                <div>
+                  <div style="font-weight:800;font-size:15px;color:#101828;margin-bottom:11px">Pilih Bengkel</div>
+                  <div style="display:flex;flex-direction:column;gap:10px">
+                    <sc-for list="{{ flowBengkelRows }}" as="b" hint-placeholder-count="3">
+                      <div onClick="{{ b.pick }}" style="{{ b.selStyle }}"><div style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-weight:700;font-size:14px;color:#101828">{{ b.nama }}</div><div style="font-size:12px;color:#8A94A6;margin-top:1px">{{ b.spesialis }} · {{ b.jarak }}</div></div></div></div>
+                    </sc-for>
+                  </div>
+                </div>
+                <div>
+                  <div style="font-weight:800;font-size:15px;color:#101828;margin-bottom:9px">Jenis Layanan</div>
+                  <select onChange="{{ onJenis }}" value="{{ flowJenis }}" style="width:100%;padding:13px 14px;border:1.5px solid #E1E6EF;border-radius:13px;font-size:14px;color:#101828;background:#fff;font-weight:600">
+                    <sc-for list="{{ jenisList }}" as="j" hint-placeholder-count="5"><option value="{{ j }}">{{ j }}</option></sc-for>
+                  </select>
+                </div>
+                <div style="display:flex;gap:12px">
+                  <div style="flex:1"><div style="font-weight:800;font-size:15px;color:#101828;margin-bottom:9px">Tanggal</div><input type="date" onChange="{{ onTanggal }}" value="{{ flowTanggal }}" style="width:100%;padding:12px 14px;border:1.5px solid #E1E6EF;border-radius:13px;font-size:14px;color:#101828;background:#fff;font-weight:600"></div>
+                  <div style="width:120px"><div style="font-weight:800;font-size:15px;color:#101828;margin-bottom:9px">Jam</div><select onChange="{{ onJam }}" value="{{ flowJam }}" style="width:100%;padding:13px 10px;border:1.5px solid #E1E6EF;border-radius:13px;font-size:14px;color:#101828;background:#fff;font-weight:600"><option value="09.00">09.00</option><option value="10.00">10.00</option><option value="11.00">11.00</option><option value="13.00">13.00</option><option value="14.00">14.00</option><option value="15.00">15.00</option></select></div>
+                </div>
+                <div>
+                  <div style="font-weight:800;font-size:15px;color:#101828;margin-bottom:9px">Keluhan / Catatan</div>
+                  <textarea onChange="{{ onKeluhan }}" value="{{ flowKeluhan }}" placeholder="Ceritakan keluhan motormu..." style="width:100%;height:90px;padding:13px 14px;border:1.5px solid #E1E6EF;border-radius:13px;font-size:14px;color:#101828;background:#fff;resize:none;line-height:1.5"></textarea>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ flowS3 }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;align-items:flex-start;padding:16px 24px 6px"><sc-for list="{{ wizardRows }}" as="w" hint-placeholder-count="3"><div style="display:flex;flex-direction:column;align-items:center"><div style="{{ w.dotStyle }}">{{ w.num }}</div><span style="{{ w.labelStyle }}">{{ w.label }}</span></div><sc-if value="{{ w.showLine }}" hint-placeholder-val="{{ true }}"><div style="{{ w.lineStyle }}"></div></sc-if></sc-for></div>
+              <div class="scr" style="flex:1;overflow-y:auto;padding:12px 16px 16px">
+                <div style="font-weight:800;font-size:15px;color:#101828;margin-bottom:12px">Ringkasan Pengajuan</div>
+                <div style="background:#fff;border:1px solid #ECEFF4;border-radius:var(--r,18px);overflow:hidden">
+                  <sc-for list="{{ flowSummary }}" as="r" hint-placeholder-count="6">
+                    <div style="display:flex;justify-content:space-between;gap:16px;padding:13px 16px;border-bottom:1px solid #F3F5F9"><span style="font-size:13px;color:#8A94A6;flex-shrink:0">{{ r.k }}</span><span style="font-size:13px;color:#101828;font-weight:700;text-align:right">{{ r.v }}</span></div>
+                  </sc-for>
+                </div>
+                <div style="background:color-mix(in srgb,var(--pri,#2158D8) 7%,#fff);border-radius:13px;padding:13px 15px;margin-top:14px;font-size:12.5px;color:#3a4a63;line-height:1.5">Bengkel akan meninjau pengajuanmu dan mengirim konfirmasi. Kamu bisa memantau status di menu Histori.</div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ flowS4 }}" hint-placeholder-val="{{ false }}">
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center">
+                <div style="width:84px;height:84px;border-radius:50%;background:#E6F6EE;display:flex;align-items:center;justify-content:center;color:#16A34A;margin-bottom:20px"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+                <div style="font-weight:800;font-size:20px;color:#101828">Pengajuan Terkirim!</div>
+                <div style="font-size:13.5px;color:#8A94A6;margin-top:8px;line-height:1.55;max-width:280px">Pengajuan servismu ke <b style="color:#475467">{{ flowBengkelName }}</b> berhasil dibuat. Menunggu konfirmasi bengkel.</div>
+                <div style="background:#F1F4F9;border-radius:11px;padding:9px 16px;margin-top:16px;font-weight:800;font-size:13.5px;color:#475467;letter-spacing:.4px">No. {{ flowNewId }}</div>
+                <button onClick="{{ flowFinish }}" style="margin-top:26px;background:var(--pri,#2158D8);border:none;border-radius:14px;padding:14px 40px;color:#fff;font-weight:800;font-size:15px;cursor:pointer">Lihat Histori Service</button>
+              </div>
+            </sc-if>
+
+            <!-- flow footer -->
+            <sc-if value="{{ flowS4 }}" hint-placeholder-val="{{ false }}"></sc-if>
+            <sc-if value="{{ flowS1 }}" hint-placeholder-val="{{ true }}">
+              <div style="padding:14px 16px;border-top:1px solid #EEF1F6;background:#fff;display:flex;gap:12px"><button onClick="{{ flowPrev }}" style="background:#F1F4F9;border:none;border-radius:13px;padding:14px 22px;color:#101828;font-weight:700;font-size:14px;cursor:pointer">Kembali</button><button onClick="{{ flowNext }}" style="flex:1;background:var(--pri,#2158D8);border:none;border-radius:13px;padding:14px;color:#fff;font-weight:800;font-size:14.5px;cursor:pointer">Lanjut</button></div>
+            </sc-if>
+            <sc-if value="{{ flowS2 }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:14px 16px;border-top:1px solid #EEF1F6;background:#fff;display:flex;gap:12px"><button onClick="{{ flowPrev }}" style="background:#F1F4F9;border:none;border-radius:13px;padding:14px 22px;color:#101828;font-weight:700;font-size:14px;cursor:pointer">Kembali</button><button onClick="{{ flowNext }}" style="flex:1;background:var(--pri,#2158D8);border:none;border-radius:13px;padding:14px;color:#fff;font-weight:800;font-size:14.5px;cursor:pointer">Lanjut</button></div>
+            </sc-if>
+            <sc-if value="{{ flowS3 }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:14px 16px;border-top:1px solid #EEF1F6;background:#fff;display:flex;gap:12px"><button onClick="{{ flowPrev }}" style="background:#F1F4F9;border:none;border-radius:13px;padding:14px 22px;color:#101828;font-weight:700;font-size:14px;cursor:pointer">Kembali</button><button onClick="{{ flowSubmit }}" style="flex:1;background:var(--pri,#2158D8);border:none;border-radius:13px;padding:14px;color:#fff;font-weight:800;font-size:14.5px;cursor:pointer">Kirim Pengajuan</button></div>
+            </sc-if>
+          </div>
+        </sc-if>
+
+        <!-- ============ BENGKEL: DASHBOARD ============ -->
+        <sc-if value="{{ bBeranda }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:16px 16px 100px;display:flex;flex-direction:column;gap:18px;animation:fu .3s ease">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:11px">
+              <sc-for list="{{ statCards }}" as="c" hint-placeholder-count="4">
+                <div style="background:#fff;border:1px solid #ECEFF4;border-radius:var(--r,18px);padding:15px"><div style="font-size:12px;color:#8A94A6;font-weight:600">{{ c.label }}</div><div style="font-weight:800;font-size:21px;color:#101828;margin-top:6px">{{ c.val }}</div></div>
+              </sc-for>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:11px"><div style="font-weight:800;font-size:15.5px;color:#101828">Pengajuan Terbaru</div><button onClick="{{ setPengajuanB }}" style="border:none;background:none;color:var(--pri,#2158D8);font-weight:700;font-size:12.5px;cursor:pointer">Lihat semua</button></div>
+              <div style="display:flex;flex-direction:column;gap:11px">
+                <sc-for list="{{ incomingTop }}" as="p" hint-placeholder-count="3">
+                  <div onClick="{{ p.open }}" style="background:#fff;border:1px solid #ECEFF4;border-radius:var(--r,18px);padding:15px;cursor:pointer">
+                    <div style="display:flex;align-items:center;gap:12px">
+                      <div style="width:42px;height:42px;border-radius:12px;background:color-mix(in srgb,var(--pri,#2158D8) 10%,#fff);display:flex;align-items:center;justify-content:center;color:var(--pri,#2158D8);font-weight:800;font-size:16px;flex-shrink:0">{{ p.initial }}</div>
+                      <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:14px;color:#101828">{{ p.customer }}</div><div style="font-size:12px;color:#8A94A6;margin-top:1px">{{ p.jenis }}</div></div>
+                      <span style="{{ p.badge.style }}">{{ p.badge.label }}</span>
+                    </div>
+                    <div style="font-size:12px;color:#98A2B3;margin-top:9px;padding-top:9px;border-top:1px solid #F3F5F9">{{ p.vehLabel }} · {{ p.jadwal }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- ============ BENGKEL: PENGAJUAN ============ -->
+        <sc-if value="{{ bPengajuan }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;height:100%">
+            <div class="scr" style="display:flex;gap:8px;padding:14px 16px 4px;overflow-x:auto;flex-shrink:0"><sc-for list="{{ chipRows }}" as="c" hint-placeholder-count="4"><button onClick="{{ c.pick }}" style="{{ c.style }}">{{ c.label }}</button></sc-for></div>
+            <div class="scr" style="flex:1;overflow-y:auto;padding:12px 16px 100px;display:flex;flex-direction:column;gap:11px;animation:fu .3s ease">
+              <sc-for list="{{ incomingRows }}" as="p" hint-placeholder-count="3">
+                <div onClick="{{ p.open }}" style="background:#fff;border:1px solid #ECEFF4;border-radius:var(--r,18px);padding:15px;cursor:pointer">
+                  <div style="display:flex;align-items:center;gap:12px">
+                    <div style="width:44px;height:44px;border-radius:13px;background:color-mix(in srgb,var(--pri,#2158D8) 10%,#fff);display:flex;align-items:center;justify-content:center;color:var(--pri,#2158D8);font-weight:800;font-size:17px;flex-shrink:0">{{ p.initial }}</div>
+                    <div style="flex:1;min-width:0"><div style="font-weight:800;font-size:14.5px;color:#101828">{{ p.customer }}</div><div style="font-size:12px;color:#8A94A6;margin-top:1px">{{ p.vehLabel }}</div></div>
+                    <span style="{{ p.badge.style }}">{{ p.badge.label }}</span>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-top:11px;padding-top:11px;border-top:1px solid #F3F5F9"><span style="font-size:13px;color:#475467;font-weight:600">{{ p.jenis }}</span><span style="font-size:12px;color:#98A2B3">{{ p.jadwal }}</span></div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- ============ BENGKEL: PENGAJUAN DETAIL ============ -->
+        <sc-if value="{{ bPengajuanDetail }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;height:100%">
+            <div class="scr" style="flex:1;overflow-y:auto;padding:16px 16px 16px;display:flex;flex-direction:column;gap:16px;animation:fu .3s ease">
+              <div style="background:#fff;border:1px solid #ECEFF4;border-radius:var(--r,18px);padding:18px">
+                <div style="display:flex;justify-content:space-between;align-items:center"><div style="display:flex;align-items:center;gap:11px"><div style="width:44px;height:44px;border-radius:13px;background:color-mix(in srgb,var(--pri,#2158D8) 10%,#fff);display:flex;align-items:center;justify-content:center;color:var(--pri,#2158D8);font-weight:800;font-size:17px">{{ svcInitial }}</div><div><div style="font-weight:800;font-size:15.5px;color:#101828">{{ svcCustomer }}</div><div style="font-size:12px;color:#8A94A6">{{ svcVehLabel }}</div></div></div><span style="{{ svcBadge.style }}">{{ svcBadge.label }}</span></div>
+              </div>
+              <div style="background:#fff;border:1px solid #ECEFF4;border-radius:var(--r,18px);overflow:hidden">
+                <div style="display:flex;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #F3F5F9"><span style="font-size:13px;color:#8A94A6">Layanan</span><span style="font-size:13px;color:#101828;font-weight:700">{{ svcJenis }}</span></div>
+                <div style="display:flex;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #F3F5F9"><span style="font-size:13px;color:#8A94A6">Jadwal</span><span style="font-size:13px;color:#101828;font-weight:700">{{ svcJadwal }}</span></div>
+                <div style="padding:12px 16px"><div style="font-size:13px;color:#8A94A6">Keluhan</div><div style="font-size:13px;color:#101828;margin-top:4px;line-height:1.5">{{ svcKeluhan }}</div></div>
+              </div>
+              <div style="background:#fff;border:1px solid #ECEFF4;border-radius:var(--r,18px);padding:18px">
+                <div style="font-weight:800;font-size:14px;color:#101828;margin-bottom:14px">Status Pengerjaan</div>
+                <div style="display:flex;flex-direction:column;gap:2px">
+                  <sc-for list="{{ svcTimeline }}" as="t" hint-placeholder-count="4">
+                    <div style="display:flex;gap:12px"><div style="display:flex;flex-direction:column;align-items:center"><div style="{{ t.dotStyle }}">{{ t.num }}</div><div style="{{ t.lineStyle }}"></div></div><div style="{{ t.textStyle }};padding-top:3px;padding-bottom:12px">{{ t.label }}</div></div>
+                  </sc-for>
+                </div>
+              </div>
+            </div>
+            <sc-if value="{{ detCanAct }}" hint-placeholder-val="{{ true }}">
+              <div style="padding:14px 16px;border-top:1px solid #EEF1F6;background:#fff;display:flex;gap:12px">
+                <sc-if value="{{ detCanReject }}" hint-placeholder-val="{{ false }}"><button onClick="{{ detReject }}" style="background:#FDECEC;border:none;border-radius:13px;padding:14px 20px;color:#B42318;font-weight:700;font-size:14px;cursor:pointer">Tolak</button></sc-if>
+                <button onClick="{{ detAdvance }}" style="flex:1;background:var(--pri,#2158D8);border:none;border-radius:13px;padding:14px;color:#fff;font-weight:800;font-size:14.5px;cursor:pointer">{{ detActLabel }}</button>
+              </div>
+            </sc-if>
+          </div>
+        </sc-if>
+
+        <!-- ============ BENGKEL: SPAREPART ============ -->
+        <sc-if value="{{ bSparepart }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:16px 16px 100px;display:flex;flex-direction:column;gap:12px;animation:fu .3s ease">
+            <sc-if value="{{ showPartForm }}" hint-placeholder-val="{{ false }}">
+              <div style="background:#fff;border:1.5px solid var(--pri,#2158D8);border-radius:var(--r,18px);padding:16px;display:flex;flex-direction:column;gap:11px">
+                <div style="font-weight:800;font-size:14.5px;color:#101828">Tambah Sparepart</div>
+                <input value="{{ partNama }}" onChange="{{ onPartNama }}" placeholder="Nama sparepart" style="width:100%;padding:12px 13px;border:1.5px solid #E1E6EF;border-radius:11px;font-size:13.5px;color:#101828">
+                <div style="display:flex;gap:10px">
+                  <input value="{{ partHarga }}" onChange="{{ onPartHarga }}" placeholder="Harga (Rp)" inputmode="numeric" style="flex:1;padding:12px 13px;border:1.5px solid #E1E6EF;border-radius:11px;font-size:13.5px;color:#101828">
+                  <input value="{{ partStok }}" onChange="{{ onPartStok }}" placeholder="Stok" inputmode="numeric" style="width:90px;padding:12px 13px;border:1.5px solid #E1E6EF;border-radius:11px;font-size:13.5px;color:#101828">
+                </div>
+                <div style="display:flex;gap:10px;margin-top:2px"><button onClick="{{ togglePartForm }}" style="background:#F1F4F9;border:none;border-radius:11px;padding:11px 18px;color:#101828;font-weight:700;font-size:13.5px;cursor:pointer">Batal</button><button onClick="{{ addPart }}" style="flex:1;background:var(--pri,#2158D8);border:none;border-radius:11px;padding:11px;color:#fff;font-weight:800;font-size:13.5px;cursor:pointer">Simpan</button></div>
+              </div>
+            </sc-if>
+            <div style="background:#fff;border:1px solid #ECEFF4;border-radius:var(--r,18px);overflow:hidden">
+              <sc-for list="{{ sparepartRows }}" as="p" hint-placeholder-count="8">
+                <div style="display:flex;align-items:center;gap:12px;padding:13px 16px;border-bottom:1px solid #F3F5F9">
+                  <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:13.5px;color:#101828">{{ p.nama }}</div><div style="display:flex;align-items:center;gap:7px;margin-top:3px"><span style="font-size:11.5px;color:#8A94A6">{{ p.kat }}</span><span style="{{ p.stokStyle }}">· {{ p.stokLabel }}</span></div></div>
+                  <div style="font-weight:800;font-size:14px;color:#101828;white-space:nowrap">{{ p.hargaFmt }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- ============ BENGKEL: RIWAYAT ============ -->
+        <sc-if value="{{ bRiwayat }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:16px 16px 100px;display:flex;flex-direction:column;gap:12px;animation:fu .3s ease">
+            <sc-for list="{{ riwayatRows }}" as="h" hint-placeholder-count="3">
+              <div onClick="{{ h.open }}" style="background:#fff;border:1px solid #ECEFF4;border-radius:var(--r,18px);padding:15px;cursor:pointer">
+                <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:11.5px;font-weight:700;color:#98A2B3;letter-spacing:.3px">{{ h.id }} · {{ h.customer }}</span><span style="{{ h.badge.style }}">{{ h.badge.label }}</span></div>
+                <div style="font-weight:800;font-size:14.5px;color:#101828;margin-top:7px">{{ h.jenis }}</div>
+                <div style="font-size:12.5px;color:#8A94A6;margin-top:2px">{{ h.vehLabel }}</div>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-top:11px;padding-top:11px;border-top:1px solid #F3F5F9"><span style="font-size:12.5px;color:#8A94A6">{{ h.tanggal }}</span><span style="font-weight:800;font-size:13.5px;color:#101828">{{ h.biayaFmt }}</span></div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <!-- ============ BENGKEL: RIWAYAT DETAIL (EDITOR SARAN) ============ -->
+        <sc-if value="{{ bRiwayatDetail }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:16px 16px 100px;display:flex;flex-direction:column;gap:16px;animation:fu .3s ease">
+            <div style="background:#fff;border:1px solid #ECEFF4;border-radius:var(--r,18px);padding:18px">
+              <div style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-weight:800;font-size:15.5px;color:#101828">{{ svcJenis }}</div><div style="font-size:12.5px;color:#8A94A6;margin-top:2px">{{ svcCustomer }} · {{ svcVehLabel }}</div></div><span style="{{ svcBadge.style }}">{{ svcBadge.label }}</span></div>
+            </div>
+            <sc-if value="{{ svcHasItems }}" hint-placeholder-val="{{ false }}">
+              <div style="background:#fff;border:1px solid #ECEFF4;border-radius:var(--r,18px);overflow:hidden">
+                <div style="padding:13px 16px;font-weight:800;font-size:14px;color:#101828;border-bottom:1px solid #F3F5F9">Rincian Biaya</div>
+                <sc-for list="{{ svcItemsRows }}" as="i" hint-placeholder-count="2"><div style="display:flex;justify-content:space-between;padding:11px 16px;border-bottom:1px solid #F3F5F9"><span style="font-size:13px;color:#475467">{{ i.qtyLabel }} {{ i.nama }}</span><span style="font-size:13px;color:#101828;font-weight:700">{{ i.hargaFmt }}</span></div></sc-for>
+                <div style="display:flex;justify-content:space-between;padding:14px 16px;background:#FAFBFF"><span style="font-size:14px;color:#101828;font-weight:800">Total</span><span style="font-size:15px;color:var(--pri,#2158D8);font-weight:800">{{ svcTotalFmt }}</span></div>
+              </div>
+            </sc-if>
+            <div style="background:#fff;border:1px solid #ECEFF4;border-radius:var(--r,18px);padding:17px">
+              <div style="display:flex;align-items:center;gap:9px;margin-bottom:13px"><div style="width:32px;height:32px;border-radius:9px;background:#FBE3B8;display:flex;align-items:center;justify-content:center;color:#B25E09"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.4 1 2.5h6c0-1.1.3-1.8 1-2.5A6 6 0 0 0 12 3z"/></svg></div><div style="font-weight:800;font-size:14.5px;color:#101828">Saran Perawatan untuk Pelanggan</div></div>
+              <textarea value="{{ saranText }}" onChange="{{ onSaranText }}" placeholder="Tulis rekomendasi perawatan untuk bulan-bulan ke depan..." style="width:100%;height:100px;padding:13px 14px;border:1.5px solid #E1E6EF;border-radius:13px;font-size:13.5px;color:#101828;resize:none;line-height:1.55"></textarea>
+              <div style="margin-top:11px"><div style="font-size:12.5px;color:#8A94A6;font-weight:600;margin-bottom:6px">Rekomendasi tindak lanjut (bulan)</div><input value="{{ saranBulan }}" onChange="{{ onSaranBulan }}" placeholder="mis. Agustus 2026" style="width:100%;padding:12px 14px;border:1.5px solid #E1E6EF;border-radius:12px;font-size:13.5px;color:#101828"></div>
+              <button onClick="{{ saveSaran }}" style="width:100%;margin-top:14px;background:var(--pri,#2158D8);border:none;border-radius:13px;padding:13px;color:#fff;font-weight:800;font-size:14px;cursor:pointer">Simpan Saran</button>
+            </div>
+          </div>
+        </sc-if>
+
+      </div>
+
+      <!-- toast -->
+      <sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;left:50%;bottom:96px;transform:translateX(-50%);background:#101828;color:#fff;padding:11px 18px;border-radius:12px;font-size:12.5px;font-weight:600;box-shadow:0 10px 28px rgba(16,24,40,.28);z-index:60;white-space:nowrap;animation:pop .2s ease">{{ toast }}</div>
+      </sc-if>
+
+      <!-- bottom nav USER -->
+      <sc-if value="{{ showNavUser }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex;background:#fff;border-top:1px solid #EEF1F6;padding:8px 6px 12px;flex-shrink:0;z-index:5">
+          <button onClick="{{ setBerandaU }}" style="flex:1;background:none;border:none;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 0;cursor:pointer"><div style="color:{{ navU.beranda }}"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg></div><span style="font-size:10.5px;font-weight:700;color:{{ navU.beranda }}">Beranda</span></button>
+          <button onClick="{{ setKendaraanU }}" style="flex:1;background:none;border:none;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 0;cursor:pointer"><div style="color:{{ navU.kendaraan }}"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="17" r="2.6"/><circle cx="18" cy="17" r="2.6"/><path d="M8.6 17h5.4l3-6.2H20"/><path d="M4 11h3.4l2.2 3.2"/></svg></div><span style="font-size:10.5px;font-weight:700;color:{{ navU.kendaraan }}">Kendaraan</span></button>
+          <button onClick="{{ setBengkelU }}" style="flex:1;background:none;border:none;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 0;cursor:pointer"><div style="color:{{ navU.bengkel }}"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-4.5h15L21 9"/><path d="M4 9v10h16V9"/><path d="M9 19v-5h6v5"/><path d="M3 9h18"/></svg></div><span style="font-size:10.5px;font-weight:700;color:{{ navU.bengkel }}">Bengkel</span></button>
+          <button onClick="{{ setHistoriU }}" style="flex:1;background:none;border:none;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 0;cursor:pointer"><div style="color:{{ navU.histori }}"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><span style="font-size:10.5px;font-weight:700;color:{{ navU.histori }}">Histori</span></button>
+        </div>
+      </sc-if>
+
+      <!-- bottom nav BENGKEL -->
+      <sc-if value="{{ showNavBengkel }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;background:#fff;border-top:1px solid #EEF1F6;padding:8px 6px 12px;flex-shrink:0;z-index:5">
+          <button onClick="{{ setBerandaB }}" style="flex:1;background:none;border:none;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 0;cursor:pointer"><div style="color:{{ navB.beranda }}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></div><span style="font-size:10.5px;font-weight:700;color:{{ navB.beranda }}">Dashboard</span></button>
+          <button onClick="{{ setPengajuanB }}" style="flex:1;background:none;border:none;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 0;cursor:pointer"><div style="color:{{ navB.pengajuan }}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16l1 8v6H3v-6z"/><path d="M3 13h5l1.5 2.5h5L16 13h5"/></svg></div><span style="font-size:10.5px;font-weight:700;color:{{ navB.pengajuan }}">Pengajuan</span></button>
+          <button onClick="{{ setSparepartB }}" style="flex:1;background:none;border:none;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 0;cursor:pointer"><div style="color:{{ navB.sparepart }}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l9-5 9 5v8l-9 5-9-5z"/><path d="M3 8l9 5 9-5"/><path d="M12 13v8"/></svg></div><span style="font-size:10.5px;font-weight:700;color:{{ navB.sparepart }}">Sparepart</span></button>
+          <button onClick="{{ setRiwayatB }}" style="flex:1;background:none;border:none;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 0;cursor:pointer"><div style="color:{{ navB.riwayat }}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13"/><circle cx="3.6" cy="6" r="1.2"/><circle cx="3.6" cy="12" r="1.2"/><circle cx="3.6" cy="18" r="1.2"/></svg></div><span style="font-size:10.5px;font-weight:700;color:{{ navB.riwayat }}">Riwayat</span></button>
+        </div>
+      </sc-if>
+
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:940,&quot;height&quot;:900},&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#C2410C&quot;,&quot;options&quot;:[&quot;#2158D8&quot;,&quot;#0E7C66&quot;,&quot;#C2410C&quot;,&quot;#4F46E5&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Tampilan&quot;},&quot;radius&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:18,&quot;min&quot;:8,&quot;max&quot;:24,&quot;step&quot;:1,&quot;unit&quot;:&quot;px&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Tampilan&quot;},&quot;startRole&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;user&quot;,&quot;options&quot;:[&quot;user&quot;,&quot;bengkel&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Tampilan&quot;}}">
+class Component extends DCLogic {
+  constructor(props){
+    super(props);
+    const vehicles = [
+      { id:'v1', nama:'Honda Vario 160', merk:'Honda', plat:'B 3021 KXY', tahun:2022, warna:'Hitam Doff', tipe:'Matic', cc:157, km:18450,
+        maint:[
+          {nama:'Ganti Oli Mesin', ik:3000, ib:3, lk:15900, lb:'Jun 2026'},
+          {nama:'Kampas Rem Depan', ik:6000, ib:12, lk:12000, lb:'Feb 2026'},
+          {nama:'Ganti Oli Gardan', ik:8000, ib:8, lk:12000, lb:'Feb 2026'},
+          {nama:'Filter Udara', ik:4000, ib:6, lk:16000, lb:'Apr 2026'},
+          {nama:'Busi', ik:8000, ib:12, lk:12000, lb:'Feb 2026'},
+          {nama:'V-Belt & Roller CVT', ik:24000, ib:24, lk:0, lb:'—'}
+        ]},
+      { id:'v2', nama:'Yamaha NMAX 155', merk:'Yamaha', plat:'B 6654 TRA', tahun:2021, warna:'Biru Metalik', tipe:'Matic', cc:155, km:32100,
+        maint:[
+          {nama:'Ganti Oli Mesin', ik:3000, ib:3, lk:30000, lb:'Mei 2026'},
+          {nama:'V-Belt & Roller CVT', ik:24000, ib:24, lk:8000, lb:'2024'},
+          {nama:'Kampas Rem Depan', ik:6000, ib:12, lk:30000, lb:'Mei 2026'},
+          {nama:'Filter Udara', ik:4000, ib:6, lk:30000, lb:'Mei 2026'}
+        ]}
+    ];
+    const bengkels = [
+      { id:'b1', nama:'Jaya Motor', alamat:'Jl. Merdeka No. 12, Jakarta Selatan', rating:4.8, ulasan:212, jarak:'1,2 km', jam:'08.00 – 17.00', buka:true, spesialis:'Spesialis Motor Matic & Bebek', verified:true },
+      { id:'b2', nama:'AHASS Sentosa Motor', alamat:'Jl. Sudirman No. 40, Jakarta', rating:4.6, ulasan:98, jarak:'3,0 km', jam:'08.00 – 16.00', buka:true, spesialis:'Bengkel Resmi Honda', verified:true },
+      { id:'b3', nama:'Sinar Abadi Racing', alamat:'Jl. Fatmawati No. 7, Jakarta', rating:4.5, ulasan:54, jarak:'4,8 km', jam:'09.00 – 20.00', buka:false, spesialis:'Modifikasi & Bore Up', verified:false }
+    ];
+    const spareparts = [
+      {id:'p1', nama:'Oli Mesin AHM MPX2 (0,8L)', kat:'Oli & Cairan', harga:55000, stok:24},
+      {id:'p2', nama:'Kampas Rem Depan', kat:'Pengereman', harga:85000, stok:12},
+      {id:'p3', nama:'Busi NGK CPR9EA', kat:'Kelistrikan', harga:28000, stok:40},
+      {id:'p4', nama:'Aki GS GTZ5S', kat:'Kelistrikan', harga:220000, stok:6},
+      {id:'p5', nama:'Ban Belakang IRC 100/80-14', kat:'Ban', harga:235000, stok:8},
+      {id:'p6', nama:'V-Belt Set Original', kat:'CVT', harga:165000, stok:10},
+      {id:'p7', nama:'Roller CVT Set', kat:'CVT', harga:90000, stok:15},
+      {id:'p8', nama:'Filter Udara', kat:'Filter', harga:45000, stok:3}
+    ];
+    const services = [
+      {id:'SVC-2065', customer:'Andi Pratama', mine:true, vehId:'v1', vehLabel:'Honda Vario 160 · B 3021 KXY', bengkelId:'b1', tanggal:'5 Jul 2026', jam:'09.00', jenis:'Servis Rutin + Ganti Oli', status:'dikerjakan', keluhan:'Servis rutin, tarikan terasa berat di putaran atas.', biaya:0, items:[], saran:'', saranBulan:''},
+      {id:'SVC-2071', customer:'Budi Santoso', mine:false, vehId:'', vehLabel:'Honda BeAT Street · B 1122 CDX', bengkelId:'b1', tanggal:'5 Jul 2026', jam:'11.00', jenis:'Ganti Ban Belakang', status:'menunggu', keluhan:'Ban belakang sudah gundul dan sering selip saat hujan.', biaya:0, items:[], saran:'', saranBulan:''},
+      {id:'SVC-2068', customer:'Citra Dewi', mine:false, vehId:'', vehLabel:'Yamaha NMAX · B 4419 QW', bengkelId:'b1', tanggal:'5 Jul 2026', jam:'13.30', jenis:'Perbaikan Rem Depan', status:'dikonfirmasi', keluhan:'Rem depan bunyi mencicit saat ditekan.', biaya:0, items:[], saran:'', saranBulan:''},
+      {id:'SVC-2041', customer:'Andi Pratama', mine:true, vehId:'v1', vehLabel:'Honda Vario 160 · B 3021 KXY', bengkelId:'b1', tanggal:'12 Jun 2026', jam:'10.00', jenis:'Servis Rutin + Ganti Oli', status:'selesai', keluhan:'Servis rutin bulanan.', biaya:145000, items:[{nama:'Oli Mesin AHM MPX2', qty:1, harga:55000},{nama:'Jasa Servis Rutin', qty:1, harga:90000}], saran:'Kampas rem depan mulai menipis — disarankan ganti dalam ~2 bulan atau sebelum menyentuh 21.000 km. Cek tekanan angin ban setiap 2 minggu.', saranBulan:'Agustus 2026'},
+      {id:'SVC-1987', customer:'Andi Pratama', mine:true, vehId:'v2', vehLabel:'Yamaha NMAX 155 · B 6654 TRA', bengkelId:'b1', tanggal:'3 Mei 2026', jam:'14.00', jenis:'Ganti V-Belt & Roller CVT', status:'selesai', keluhan:'Muncul bunyi kasar dari area CVT.', biaya:320000, items:[{nama:'V-Belt Set Original', qty:1, harga:165000},{nama:'Roller CVT Set', qty:1, harga:90000},{nama:'Jasa Bongkar CVT', qty:1, harga:65000}], saran:'Kondisi CVT kembali normal. Servis CVT berikutnya diperkirakan di ~56.000 km.', saranBulan:'—'}
+    ];
+    this.state = { role:'user', tabUser:'beranda', tabBengkel:'beranda', stackUser:[], stackBengkel:[], sel:{veh:'v1', bengkel:'b1', service:'SVC-2041'}, flow:null, toast:null, pengFilter:'semua', saranDraft:{text:'', bulan:''}, showPartForm:false, partDraft:{nama:'', harga:'', stok:''}, vehicles, bengkels, spareparts, services };
+  }
+
+  componentDidMount(){ if(this.props.startRole==='bengkel') this.setState({role:'bengkel'}); this.applyVars(); }
+  componentDidUpdate(){ this.applyVars(); }
+  applyVars(){ try{ const r=document.documentElement; r.style.setProperty('--pri', this.props.accent||'#2158D8'); r.style.setProperty('--r', (this.props.radius||18)+'px'); }catch(e){} }
+
+  fmtRp(n){ return 'Rp '+(n||0).toLocaleString('id-ID'); }
+  fmtKm(n){ return (n||0).toLocaleString('id-ID')+' km'; }
+  fmtDate(iso){ if(!iso) return '-'; try{ const d=new Date(iso+'T00:00'); return d.toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'}); }catch(e){ return iso; } }
+
+  statusBadge(st){ const m={ menunggu:{l:'Menunggu',bg:'#FFF4E5',fg:'#B25E09'}, dikonfirmasi:{l:'Dikonfirmasi',bg:'#E9F0FF',fg:'#1D4ED8'}, dikerjakan:{l:'Dikerjakan',bg:'#EFE9FF',fg:'#6D28D9'}, selesai:{l:'Selesai',bg:'#E6F6EE',fg:'#0F7A3D'}, batal:{l:'Dibatalkan',bg:'#FDECEC',fg:'#B42318'} }[st]||{l:st,bg:'#EEF1F6',fg:'#556'}; return {label:m.l, style:{background:m.bg,color:m.fg,padding:'4px 10px',borderRadius:'999px',fontSize:'11.5px',fontWeight:'700',whiteSpace:'nowrap'}}; }
+
+  maintCompute(v){ return (v.maint||[]).map(m=>{ const next=m.lk+m.ik; const rem=next-v.km; let st= rem<0?'lewat':(rem<=1000?'segera':'aman'); const meta={ lewat:{l:'Terlewat',bg:'#FDECEC',fg:'#B42318',bar:'#DC2626'}, segera:{l:'Segera',bg:'#FFF4E5',fg:'#B25E09',bar:'#E8890C'}, aman:{l:'Aman',bg:'#E6F6EE',fg:'#0F7A3D',bar:'#16A34A'} }[st]; const pct=Math.max(6,Math.min(100, Math.round(((v.km-m.lk)/m.ik)*100))); return { nama:m.nama, intervalLabel:'Tiap '+m.ik.toLocaleString('id-ID')+' km / '+m.ib+' bln', nextLabel: rem<0? ('Terlewat '+Math.abs(rem).toLocaleString('id-ID')+' km') : ('± '+rem.toLocaleString('id-ID')+' km lagi'), lastLabel:'Terakhir '+(m.lk? m.lk.toLocaleString('id-ID')+' km':'baru')+' · '+m.lb, badge:{label:meta.l, style:{background:meta.bg,color:meta.fg,padding:'3px 9px',borderRadius:'999px',fontSize:'11px',fontWeight:'700',whiteSpace:'nowrap'}}, barColor:meta.bar, barStyle:{height:'100%',width:pct+'%',background:meta.bar,borderRadius:'99px'}, st }; }); }
+
+  buildTimeline(status){ const order=['menunggu','dikonfirmasi','dikerjakan','selesai']; const labels=['Diajukan','Dikonfirmasi','Dikerjakan','Selesai']; const idx=order.indexOf(status); return labels.map((l,i)=>{ const done=i<=idx; const pri='var(--pri,#2158D8)'; return {label:l, isLast:i===3, dotStyle:{width:'26px',height:'26px',borderRadius:'50%',flexShrink:'0',display:'flex',alignItems:'center',justifyContent:'center',background:done?pri:'#EEF1F6',color:done?'#fff':'#B4BCCB',border:done?'none':'1.5px solid #E1E6EF',fontSize:'12px',fontWeight:'800'}, lineStyle:{width:'2px',flex:'1',minHeight:'22px',background:done?pri:'#E7EBF2',margin:'3px 0'}, textStyle:{fontWeight:done?'700':'600',fontSize:'13.5px',color:done?'#101828':'#A6AEBD'}, num: done? '✓' : String(i+1)}; }); }
+
+  setRole(r){ this.setState({role:r}); }
+  setTabUser(t){ this.setState({tabUser:t, stackUser:[]}); }
+  setTabBengkel(t){ this.setState({tabBengkel:t, stackBengkel:[]}); }
+  back(){ this.setState(s=>{ if(s.role==='user'){ const top=s.stackUser[s.stackUser.length-1]; return {stackUser:s.stackUser.slice(0,-1), flow: top==='u_flow'? null : s.flow}; } return {stackBengkel:s.stackBengkel.slice(0,-1)}; }); }
+  pushU(screen, sel){ this.setState(s=>({sel:{...s.sel, ...(sel||{})}, stackUser:[...s.stackUser, screen]})); }
+  pushB(screen, sel){ this.setState(s=>({sel:{...s.sel, ...(sel||{})}, stackBengkel:[...s.stackBengkel, screen]})); }
+
+  openFlow(){ this.setState(s=>({ stackUser:[...s.stackUser,'u_flow'], flow:{step:1, vehId:s.sel.veh||s.vehicles[0].id, bengkelId:'b1', jenis:'Servis Rutin + Ganti Oli', tanggal:'2026-07-06', jam:'09.00', keluhan:''} })); }
+  flowSet(p){ this.setState(s=>({flow:{...s.flow, ...p}})); }
+  flowNext(){ this.setState(s=>({flow:{...s.flow, step:Math.min(3,s.flow.step+1)}})); }
+  flowPrev(){ this.back(); }
+  flowSubmit(){ this.setState(s=>{ const v=s.vehicles.find(x=>x.id===s.flow.vehId); const id='SVC-'+(2080+Math.floor(Math.random()*90)); const svc={id, customer:'Andi Pratama', mine:true, vehId:v.id, vehLabel:v.nama+' · '+v.plat, bengkelId:s.flow.bengkelId, tanggal:this.fmtDate(s.flow.tanggal), jam:s.flow.jam, jenis:s.flow.jenis, status:'menunggu', keluhan:s.flow.keluhan||'-', biaya:0, items:[], saran:'', saranBulan:''}; return {services:[svc, ...s.services], flow:{...s.flow, step:4, newId:id}}; }); }
+  flowFinish(){ this.setState({stackUser:[], tabUser:'histori', flow:null}); }
+
+  advance(id){ const order={menunggu:'dikonfirmasi', dikonfirmasi:'dikerjakan', dikerjakan:'selesai'}; this.setState(s=>({services:s.services.map(x=> x.id===id? {...x, status: order[x.status]||x.status}:x)})); this.toast('Status pesanan diperbarui'); }
+  reject(id){ this.setState(s=>({services:s.services.map(x=> x.id===id? {...x, status:'batal'}:x)})); this.toast('Pengajuan ditolak'); }
+  setPengFilter(f){ this.setState({pengFilter:f}); }
+  saveSaran(){ this.setState(s=>({services:s.services.map(x=> x.id===s.sel.service? {...x, saran:s.saranDraft.text, saranBulan:s.saranDraft.bulan||x.saranBulan}:x)})); this.toast('Saran perawatan tersimpan'); }
+  togglePartForm(){ this.setState(s=>({showPartForm:!s.showPartForm, partDraft:{nama:'',harga:'',stok:''}})); }
+  addPart(){ this.setState(s=>{ const d=s.partDraft; if(!d.nama) return {}; const p={id:'p'+(s.spareparts.length+1), nama:d.nama, kat:d.kat||'Umum', harga:Number(d.harga)||0, stok:Number(d.stok)||0}; return {spareparts:[...s.spareparts,p], showPartForm:false, partDraft:{nama:'',harga:'',stok:''}}; }); this.toast('Sparepart ditambahkan'); }
+  toast(msg){ this.setState({toast:msg}); clearTimeout(this._t); this._t=setTimeout(()=>this.setState({toast:null}),1900); }
+
+  renderVals(){
+    const s=this.state; const isUser=s.role==='user';
+    const stack=isUser?s.stackUser:s.stackBengkel;
+    const base=isUser?('u_'+s.tabUser):('b_'+s.tabBengkel);
+    const S=stack.length?stack[stack.length-1]:base;
+    const canBack=stack.length>0;
+    const veh=s.vehicles.find(v=>v.id===s.sel.veh)||s.vehicles[0];
+    const bengkel=s.bengkels.find(b=>b.id===s.sel.bengkel)||s.bengkels[0];
+    const svc=s.services.find(x=>x.id===s.sel.service);
+    const bName=id=>{const b=s.bengkels.find(x=>x.id===id);return b?b.nama:'-';};
+    const myServices=s.services.filter(x=>x.mine);
+    const active=myServices.find(x=>x.status!=='selesai'&&x.status!=='batal');
+
+    const TB={ u_beranda:['Halo, Andi','Ayo rawat motormu hari ini'], u_kendaraan:['Kendaraan Saya',''], u_vehDetail:[veh.nama, veh.plat], u_bengkel:['Cari Bengkel',''], u_bengkelDetail:[bengkel.nama, bengkel.spesialis], u_histori:['Histori Service',''], u_historiDetail:[svc?svc.id:'Detail', svc?svc.jenis:''], u_perawatan:['Perawatan Rutin', veh.nama], u_flow:['Ajukan Service',''], b_beranda:['Dashboard','Jaya Motor'], b_pengajuan:['Pengajuan Masuk',''], b_pengajuanDetail:[svc?svc.id:'', svc?svc.jenis:''], b_sparepart:['Sparepart & Harga',''], b_riwayat:['Riwayat Service',''], b_riwayatDetail:[svc?svc.id:'', svc?svc.jenis:''] };
+    const tt=TB[S]||['','']; const topTitle=tt[0], topSub=tt[1];
+
+    // vehicles
+    const vehicleRows=s.vehicles.map(v=>{ const m=this.maintCompute(v); const due=m.filter(x=>x.st!=='aman').length; return { id:v.id, nama:v.nama, plat:v.plat, tahun:v.tahun, warna:v.warna, tipe:v.tipe, cc:v.cc, kmFmt:this.fmtKm(v.km), dueLabel: due? (due+' perawatan perlu dicek') : 'Semua terawat baik', dueDot:{width:'8px',height:'8px',borderRadius:'50%',background: due?'#E8890C':'#16A34A',flexShrink:'0'}, dueColor:{color: due?'#B25E09':'#0F7A3D', fontSize:'12.5px', fontWeight:'600'}, open:()=>this.pushU('u_vehDetail',{veh:v.id}) }; });
+
+    const specRows = veh? [ {k:'Merk',v:veh.merk}, {k:'Tahun',v:String(veh.tahun)}, {k:'Warna',v:veh.warna}, {k:'Tipe',v:veh.tipe}, {k:'Kapasitas',v:veh.cc+' cc'}, {k:'Odometer',v:this.fmtKm(veh.km)} ] : [];
+    const vehMaint=veh? this.maintCompute(veh):[];
+    const vehMaintTop=vehMaint.slice(0,3);
+
+    // beranda alerts across all vehicles
+    let alerts=[]; s.vehicles.forEach(v=>{ this.maintCompute(v).forEach(m=>{ if(m.st!=='aman') alerts.push({veh:v.nama, vehId:v.id, nama:m.nama, nextLabel:m.nextLabel, badge:m.badge, open:()=>this.pushU('u_vehDetail',{veh:v.id})}); }); });
+    const ord={lewat:0,segera:1}; alerts.sort((a,b)=>0);
+    const alertRows=alerts.slice(0,3);
+
+    // active card
+    const hasActive=!!active;
+    const pctMap={menunggu:22,dikonfirmasi:50,dikerjakan:78,selesai:100};
+    const stepTxt={menunggu:'Menunggu konfirmasi bengkel',dikonfirmasi:'Dikonfirmasi — menunggu dikerjakan',dikerjakan:'Motor sedang dikerjakan',selesai:'Selesai'};
+    const activeBadge=active?this.statusBadge(active.status):{};
+    const activePct=active?pctMap[active.status]:0;
+
+    // bengkel list
+    const bengkelRows=s.bengkels.map(b=>({ id:b.id, nama:b.nama, alamat:b.alamat, spesialis:b.spesialis, verified:b.verified, jarak:b.jarak, jam:b.jam, ratingLabel:b.rating.toFixed(1).replace('.',','), ulasan:b.ulasan, statusLabel:b.buka?'Buka':'Tutup', statusStyle:{background:b.buka?'#E6F6EE':'#FDECEC', color:b.buka?'#0F7A3D':'#B42318', padding:'3px 9px', borderRadius:'999px', fontSize:'11px', fontWeight:'700'}, open:()=>this.pushU('u_bengkelDetail',{bengkel:b.id}) }));
+
+    // sparepart rows
+    const partRow=p=>({ id:p.id, nama:p.nama, kat:p.kat, hargaFmt:this.fmtRp(p.harga), stokLabel:(p.stok>0? p.stok+' pcs':'Habis'), stokStyle:{fontSize:'11.5px',fontWeight:'700', color: p.stok>5?'#0F7A3D':(p.stok>0?'#B25E09':'#B42318')} });
+    const sparepartRows=s.spareparts.map(partRow);
+    const selBengkelHasParts = bengkel.id==='b1';
+    const bengkelPartRows = selBengkelHasParts? sparepartRows : [];
+
+    // histori (user)
+    const historyRows=myServices.map(x=>({ id:x.id, jenis:x.jenis, vehLabel:x.vehLabel, tanggal:x.tanggal, jam:x.jam, bengkelName:bName(x.bengkelId), badge:this.statusBadge(x.status), biayaFmt: x.status==='selesai'? this.fmtRp(x.biaya):'—', hasSaranDot: !!x.saran, open:()=>this.pushU('u_historiDetail',{service:x.id}) }));
+
+    // service detail (shared)
+    const svcItemsRows = svc? svc.items.map(i=>({nama:i.nama, qtyLabel:i.qty+'×', hargaFmt:this.fmtRp(i.harga*i.qty)})):[];
+    const svcTimeline = svc? this.buildTimeline(svc.status):[];
+    const svcBadge = svc? this.statusBadge(svc.status):{};
+    const svcIsSelesai = svc? svc.status==='selesai':false;
+    const svcHasItems = svc? svc.items.length>0:false;
+    const svcHasSaran = svc? !!svc.saran:false;
+
+    // bengkel side
+    const allB=s.services.filter(x=>x.bengkelId==='b1');
+    const incomingAll=allB.filter(x=>x.status!=='selesai'&&x.status!=='batal');
+    const incoming= s.pengFilter==='semua'? incomingAll : incomingAll.filter(x=>x.status===s.pengFilter);
+    const incRow=x=>({ id:x.id, customer:x.customer, vehLabel:x.vehLabel, jenis:x.jenis, jadwal:x.tanggal+' · '+x.jam, badge:this.statusBadge(x.status), initial:x.customer[0], open:()=>this.pushB('b_pengajuanDetail',{service:x.id}) });
+    const incomingRows=incoming.map(incRow);
+    const riwayatB=allB.filter(x=>x.status==='selesai');
+    const riwayatRows=riwayatB.map(x=>({ id:x.id, customer:x.customer, vehLabel:x.vehLabel, jenis:x.jenis, tanggal:x.tanggal, biayaFmt:this.fmtRp(x.biaya), badge:this.statusBadge(x.status), hasSaran:!!x.saran, open:()=>this.pushB('b_riwayatDetail',{service:x.id}) }));
+    const cMenunggu=incomingAll.filter(x=>x.status==='menunggu').length;
+    const cDikerjakan=incomingAll.filter(x=>x.status==='dikerjakan').length;
+    const cSelesai=riwayatB.length;
+    const revenue=riwayatB.reduce((a,b)=>a+b.biaya,0);
+    const statCards=[ {label:'Menunggu', val:String(cMenunggu), color:'#B25E09', bg:'#FFF7ED'}, {label:'Dikerjakan', val:String(cDikerjakan), color:'#6D28D9', bg:'#F5F1FE'}, {label:'Selesai', val:String(cSelesai), color:'#0F7A3D', bg:'#EAF8F0'}, {label:'Pendapatan', val:this.fmtRp(revenue), color:'#1D4ED8', bg:'#EDF3FF'} ];
+    const chipDef=[['semua','Semua'],['menunggu','Menunggu'],['dikonfirmasi','Dikonfirmasi'],['dikerjakan','Dikerjakan']];
+    const chipRows=chipDef.map(c=>{ const on=s.pengFilter===c[0]; return {key:c[0], label:c[1], style:{padding:'7px 14px', borderRadius:'999px', fontSize:'12.5px', fontWeight:'700', cursor:'pointer', whiteSpace:'nowrap', border:'1px solid '+(on?'transparent':'#E1E6EF'), background:on?'var(--pri,#2158D8)':'#fff', color:on?'#fff':'#667085'}, pick:()=>this.setPengFilter(c[0])}; });
+
+    // pengajuan detail action
+    let detActLabel='', detCanAct=false, detCanReject=false;
+    if(svc){ if(svc.status==='menunggu'){detActLabel='Konfirmasi Pesanan'; detCanAct=true; detCanReject=true;} else if(svc.status==='dikonfirmasi'){detActLabel='Mulai Dikerjakan'; detCanAct=true;} else if(svc.status==='dikerjakan'){detActLabel='Tandai Selesai'; detCanAct=true;} }
+
+    // flow
+    const flow=s.flow; const flowStep=flow?flow.step:0;
+    let wizardRows=[], flowVehRows=[], flowBengkelRows=[], flowSummary=[], flowVeh=null, flowBengkel=null;
+    const jenisList=['Servis Rutin','Servis Rutin + Ganti Oli','Ganti Sparepart','Perbaikan / Keluhan','Servis CVT'];
+    if(flow){
+      flowVeh=s.vehicles.find(v=>v.id===flow.vehId)||s.vehicles[0];
+      flowBengkel=s.bengkels.find(b=>b.id===flow.bengkelId)||s.bengkels[0];
+      const labels=['Kendaraan','Detail','Ringkas'];
+      wizardRows=labels.map((l,i)=>{ const n=i+1; const done=flow.step>n, cur=flow.step===n, on=done||cur; const pri='var(--pri,#2158D8)'; return {label:l, num:String(n), showLine:i<2, dotStyle:{width:'28px',height:'28px',borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'12.5px',fontWeight:'800', background:on?pri:'#fff', color:on?'#fff':'#98A2B3', border:on?'none':'1.5px solid #E1E6EF'}, labelStyle:{fontSize:'11px',fontWeight:'700',marginTop:'5px', color:cur?'#101828':'#A6AEBD'}, lineStyle:{flex:'1',height:'2px',background: done?pri:'#E1E6EF',margin:'13px 4px 0'}}; });
+      flowVehRows=s.vehicles.map(v=>{ const on=v.id===flow.vehId; return {id:v.id, nama:v.nama, plat:v.plat, kmFmt:this.fmtKm(v.km), selStyle:{border:'2px solid '+(on?'var(--pri,#2158D8)':'#E7EBF2'), background:on?'color-mix(in srgb,var(--pri,#2158D8) 6%,#fff)':'#fff', borderRadius:'16px', padding:'14px', display:'flex', alignItems:'center', gap:'12px', cursor:'pointer'}, checkStyle:{width:'22px',height:'22px',borderRadius:'50%',flexShrink:'0',border:'2px solid '+(on?'var(--pri,#2158D8)':'#D6DBE4'),background:on?'var(--pri,#2158D8)':'#fff',display:'flex',alignItems:'center',justifyContent:'center'}, on, pick:()=>this.flowSet({vehId:v.id})}; });
+      flowBengkelRows=s.bengkels.map(b=>{ const on=b.id===flow.bengkelId; return {id:b.id, nama:b.nama, spesialis:b.spesialis, jarak:b.jarak, selStyle:{border:'2px solid '+(on?'var(--pri,#2158D8)':'#E7EBF2'), background:on?'color-mix(in srgb,var(--pri,#2158D8) 6%,#fff)':'#fff', borderRadius:'16px', padding:'14px', cursor:'pointer'}, on, pick:()=>this.flowSet({bengkelId:b.id})}; });
+      flowSummary=[ {k:'Kendaraan', v:flowVeh.nama+' · '+flowVeh.plat}, {k:'Bengkel', v:flowBengkel.nama}, {k:'Jenis Layanan', v:flow.jenis}, {k:'Tanggal', v:this.fmtDate(flow.tanggal)}, {k:'Jam', v:flow.jam}, {k:'Keluhan', v:flow.keluhan||'-'} ];
+    }
+
+    // nav colors
+    const nc=(a,k)=> (a===k?'var(--pri,#2158D8)':'#9AA4B4');
+    const navU={ beranda:nc(s.tabUser,'beranda'), kendaraan:nc(s.tabUser,'kendaraan'), bengkel:nc(s.tabUser,'bengkel'), histori:nc(s.tabUser,'histori') };
+    const navB={ beranda:nc(s.tabBengkel,'beranda'), pengajuan:nc(s.tabBengkel,'pengajuan'), sparepart:nc(s.tabBengkel,'sparepart'), riwayat:nc(s.tabBengkel,'riwayat') };
+
+    const scr=k=>S===k;
+    return {
+      // toggle
+      roleUserStyle:{flex:'1', padding:'9px 0', borderRadius:'11px', border:'none', cursor:'pointer', fontWeight:'700', fontSize:'13.5px', background:isUser?'#fff':'transparent', color:isUser?'#101828':'#7A8598', boxShadow:isUser?'0 1px 3px rgba(16,24,40,.12)':'none', transition:'all .15s'},
+      roleBengkelStyle:{flex:'1', padding:'9px 0', borderRadius:'11px', border:'none', cursor:'pointer', fontWeight:'700', fontSize:'13.5px', background:!isUser?'#fff':'transparent', color:!isUser?'#101828':'#7A8598', boxShadow:!isUser?'0 1px 3px rgba(16,24,40,.12)':'none', transition:'all .15s'},
+      setRoleUser:()=>this.setRole('user'), setRoleBengkel:()=>this.setRole('bengkel'),
+      // topbar
+      topTitle, topSub, showBack:canBack, showLogo:!canBack, rightBell:S==='u_beranda', rightAdd:S==='b_sparepart', back:()=>this.back(),
+      // nav
+      showNavUser: isUser && S!=='u_flow', showNavBengkel: !isUser, navU, navB,
+      setBerandaU:()=>this.setTabUser('beranda'), setKendaraanU:()=>this.setTabUser('kendaraan'), setBengkelU:()=>this.setTabUser('bengkel'), setHistoriU:()=>this.setTabUser('histori'),
+      setBerandaB:()=>this.setTabBengkel('beranda'), setPengajuanB:()=>this.setTabBengkel('pengajuan'), setSparepartB:()=>this.setTabBengkel('sparepart'), setRiwayatB:()=>this.setTabBengkel('riwayat'),
+      // screen flags
+      uBeranda:scr('u_beranda'), uKendaraan:scr('u_kendaraan'), uVehDetail:scr('u_vehDetail'), uBengkel:scr('u_bengkel'), uBengkelDetail:scr('u_bengkelDetail'), uHistori:scr('u_histori'), uHistoriDetail:scr('u_historiDetail'), uPerawatan:scr('u_perawatan'), uFlow:scr('u_flow'),
+      bBeranda:scr('b_beranda'), bPengajuan:scr('b_pengajuan'), bPengajuanDetail:scr('b_pengajuanDetail'), bSparepart:scr('b_sparepart'), bRiwayat:scr('b_riwayat'), bRiwayatDetail:scr('b_riwayatDetail'),
+      flowS1:flowStep===1, flowS2:flowStep===2, flowS3:flowStep===3, flowS4:flowStep===4,
+      // data
+      vehicleRows, specRows, vehMaint, vehMaintTop, alertRows, bengkelRows, sparepartRows, bengkelPartRows, selBengkelHasParts, historyRows,
+      hasActive, activeBadge, activePct, activeJenis:active?active.jenis:'', activeVehLabel:active?active.vehLabel:'', activeBengkel:active?bName(active.bengkelId):'', activeStepLabel:active?stepTxt[active.status]:'', openActive:()=>{ if(active) this.pushU('u_historiDetail',{service:active.id}); },
+      openFlowBtn:()=>this.openFlow(), goPerawatan:()=>this.pushU('u_perawatan',{veh:veh.id}), goPerawatanFromVeh:()=>this.pushU('u_perawatan',{veh:veh.id}), goKendaraan:()=>this.setTabUser('kendaraan'), goBengkelTab:()=>this.setTabUser('bengkel'), goHistori:()=>this.setTabUser('histori'), addVehToast:()=>this.toast('Menu tambah kendaraan (demo)'), hubungiToast:()=>this.toast('Menghubungi bengkel (demo)'),
+      // veh detail
+      vehName:veh?veh.nama:'', vehPlat:veh?veh.plat:'', vehWarna:veh?veh.warna:'', vehKmFmt:veh?this.fmtKm(veh.km):'', vehTahun:veh?String(veh.tahun):'', vehTipe:veh?veh.tipe:'',
+      // bengkel detail
+      bkName:bengkel.nama, bkAlamat:bengkel.alamat, bkSpesialis:bengkel.spesialis, bkRating:bengkel.rating.toFixed(1).replace('.',','), bkUlasan:bengkel.ulasan, bkJarak:bengkel.jarak, bkJam:bengkel.jam, bkStatusLabel:bengkel.buka?'Buka sekarang':'Tutup', bkStatusStyle:{color:bengkel.buka?'#0F7A3D':'#B42318',fontWeight:'700',fontSize:'12.5px'},
+      // service detail
+      svcId:svc?svc.id:'', svcJenis:svc?svc.jenis:'', svcKeluhan:svc?svc.keluhan:'', svcVehLabel:svc?svc.vehLabel:'', svcCustomer:svc?svc.customer:'', svcInitial:svc?svc.customer[0]:'', svcBengkelName:svc?bName(svc.bengkelId):'', svcJadwal:svc?(svc.tanggal+' · '+svc.jam):'', svcBadge, svcItemsRows, svcTimeline, svcIsSelesai, svcHasItems, svcHasSaran, svcTotalFmt:svc?this.fmtRp(svc.biaya):'', svcSaran:svc?svc.saran:'', svcSaranBulan:svc?svc.saranBulan:'',
+      // pengajuan action
+      detActLabel, detCanAct, detCanReject, detAdvance:()=>{ if(svc) this.advance(svc.id); }, detReject:()=>{ if(svc) this.reject(svc.id); },
+      // bengkel dashboard
+      statCards, incomingRows, riwayatRows, chipRows,
+      incomingTop: incomingAll.slice(0,3).map(incRow),
+      // sparepart form
+      showPartForm:s.showPartForm, togglePartForm:()=>this.togglePartForm(), addPart:()=>this.addPart(), partNama:s.partDraft.nama, partHarga:s.partDraft.harga, partStok:s.partDraft.stok,
+      onPartNama:e=>this.setState({partDraft:{...this.state.partDraft,nama:e.target.value}}), onPartHarga:e=>this.setState({partDraft:{...this.state.partDraft,harga:e.target.value}}), onPartStok:e=>this.setState({partDraft:{...this.state.partDraft,stok:e.target.value}}),
+      // saran editor
+      saranText:s.saranDraft.text, saranBulan:s.saranDraft.bulan, onSaranText:e=>this.setState({saranDraft:{...this.state.saranDraft,text:e.target.value}}), onSaranBulan:e=>this.setState({saranDraft:{...this.state.saranDraft,bulan:e.target.value}}), saveSaran:()=>this.saveSaran(),
+      // flow
+      wizardRows, flowVehRows, flowBengkelRows, flowSummary, jenisList, flowJenis:flow?flow.jenis:'', flowTanggal:flow?flow.tanggal:'', flowJam:flow?flow.jam:'', flowKeluhan:flow?flow.keluhan:'', flowNewId:flow?flow.newId:'', flowBengkelName:flowBengkel?flowBengkel.nama:'',
+      flowNext:()=>this.flowNext(), flowPrev:()=>this.flowPrev(), flowSubmit:()=>this.flowSubmit(), flowFinish:()=>this.flowFinish(),
+      onJenis:e=>this.flowSet({jenis:e.target.value}), onTanggal:e=>this.flowSet({tanggal:e.target.value}), onJam:e=>this.flowSet({jam:e.target.value}), onKeluhan:e=>this.flowSet({keluhan:e.target.value}),
+      // toast
+      toast:s.toast
+    };
+  }
+}
+</script>
+</body>
+</html>

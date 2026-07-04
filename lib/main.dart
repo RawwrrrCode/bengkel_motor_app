@@ -2,47 +2,34 @@ import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 
-import 'providers/customer_provider.dart';
-import 'providers/reminder_provider.dart';
-import 'providers/service_record_provider.dart';
-import 'providers/vehicle_provider.dart';
-import 'screens/dashboard_screen.dart';
-import 'services/notification_service.dart';
-
-final routeObserver = RouteObserver<PageRoute>();
+import 'providers/app_provider.dart';
+import 'screens/role_shell.dart';
+import 'theme/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('id_ID', null);
 
-  final notificationService = NotificationService();
-  await notificationService.init();
+  final appProvider = AppProvider();
+  await appProvider.loadPersisted();
 
-  runApp(BengkelMotorApp(notificationService: notificationService));
+  runApp(BengkelKuApp(appProvider: appProvider));
 }
 
-class BengkelMotorApp extends StatelessWidget {
-  final NotificationService notificationService;
+class BengkelKuApp extends StatelessWidget {
+  final AppProvider appProvider;
 
-  const BengkelMotorApp({super.key, required this.notificationService});
+  const BengkelKuApp({super.key, required this.appProvider});
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => CustomerProvider()),
-        ChangeNotifierProvider(create: (_) => VehicleProvider()),
-        ChangeNotifierProvider(create: (_) => ServiceRecordProvider()),
-        ChangeNotifierProvider(create: (_) => ReminderProvider(notificationService)),
-      ],
+    return ChangeNotifierProvider.value(
+      value: appProvider,
       child: MaterialApp(
-        title: 'Bengkel Motor',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
-          useMaterial3: true,
-        ),
-        navigatorObservers: [routeObserver],
-        home: const DashboardScreen(),
+        title: 'BengkelKu',
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.light,
+        home: const RoleShell(),
       ),
     );
   }

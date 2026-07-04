@@ -1,81 +1,138 @@
-class Vehicle {
-  final int? id;
-  final int customerId;
-  final String plateNumber;
-  final String brand;
-  final String model;
-  final int? year;
-  final String? color;
-  final int? currentOdometer;
-  final String? notes;
-  final String createdAt;
+import 'package:flutter/material.dart';
 
-  Vehicle({
-    this.id,
-    required this.customerId,
-    required this.plateNumber,
-    required this.brand,
-    required this.model,
-    this.year,
-    this.color,
-    this.currentOdometer,
-    this.notes,
-    required this.createdAt,
+import '../theme/app_colors.dart';
+import '../utils/formatters.dart';
+
+enum MaintStatus { lewat, segera, aman }
+
+class MaintBadge {
+  final String label;
+  final Color bg;
+  final Color fg;
+
+  const MaintBadge({required this.label, required this.bg, required this.fg});
+}
+
+class MaintComputed {
+  final String nama;
+  final String intervalLabel;
+  final String nextLabel;
+  final String lastLabel;
+  final MaintStatus status;
+  final double progressPct;
+  final Color barColor;
+  final MaintBadge badge;
+
+  const MaintComputed({
+    required this.nama,
+    required this.intervalLabel,
+    required this.nextLabel,
+    required this.lastLabel,
+    required this.status,
+    required this.progressPct,
+    required this.barColor,
+    required this.badge,
+  });
+}
+
+class MaintItem {
+  final String nama;
+  final int intervalKm;
+  final int intervalBulan;
+  final int lastKm;
+  final String lastLabel;
+
+  const MaintItem({
+    required this.nama,
+    required this.intervalKm,
+    required this.intervalBulan,
+    required this.lastKm,
+    required this.lastLabel,
   });
 
-  Vehicle copyWith({
-    int? id,
-    int? customerId,
-    String? plateNumber,
-    String? brand,
-    String? model,
-    int? year,
-    String? color,
-    int? currentOdometer,
-    String? notes,
-    String? createdAt,
-  }) {
-    return Vehicle(
-      id: id ?? this.id,
-      customerId: customerId ?? this.customerId,
-      plateNumber: plateNumber ?? this.plateNumber,
-      brand: brand ?? this.brand,
-      model: model ?? this.model,
-      year: year ?? this.year,
-      color: color ?? this.color,
-      currentOdometer: currentOdometer ?? this.currentOdometer,
-      notes: notes ?? this.notes,
-      createdAt: createdAt ?? this.createdAt,
+  MaintComputed compute(int currentKm) {
+    final nextKm = lastKm + intervalKm;
+    final remainingKm = nextKm - currentKm;
+    final MaintStatus status;
+    if (remainingKm < 0) {
+      status = MaintStatus.lewat;
+    } else if (remainingKm <= 1000) {
+      status = MaintStatus.segera;
+    } else {
+      status = MaintStatus.aman;
+    }
+
+    final progressPct = (((currentKm - lastKm) / intervalKm) * 100)
+        .clamp(6, 100)
+        .toDouble();
+
+    final Color barColor;
+    final MaintBadge badge;
+    switch (status) {
+      case MaintStatus.lewat:
+        barColor = AppColors.lewatBar;
+        badge = const MaintBadge(
+            label: 'Terlewat', bg: AppColors.lewatBg, fg: AppColors.lewatFg);
+        break;
+      case MaintStatus.segera:
+        barColor = AppColors.segeraBar;
+        badge = const MaintBadge(
+            label: 'Segera', bg: AppColors.segeraBg, fg: AppColors.segeraFg);
+        break;
+      case MaintStatus.aman:
+        barColor = AppColors.amanBar;
+        badge = const MaintBadge(
+            label: 'Aman', bg: AppColors.amanBg, fg: AppColors.amanFg);
+        break;
+    }
+
+    final nextLabel = remainingKm < 0
+        ? 'Terlewat ${AppFormatters.fmtNumber(remainingKm.abs())} km'
+        : '± ${AppFormatters.fmtNumber(remainingKm)} km lagi';
+
+    return MaintComputed(
+      nama: nama,
+      intervalLabel:
+          'Tiap ${AppFormatters.fmtNumber(intervalKm)} km / $intervalBulan bln',
+      nextLabel: nextLabel,
+      lastLabel:
+          'Terakhir ${lastKm > 0 ? '${AppFormatters.fmtNumber(lastKm)} km' : 'baru'} · $lastLabel',
+      status: status,
+      progressPct: progressPct,
+      barColor: barColor,
+      badge: badge,
     );
   }
+}
 
-  Map<String, Object?> toMap() {
-    return {
-      'id': id,
-      'customer_id': customerId,
-      'plate_number': plateNumber,
-      'brand': brand,
-      'model': model,
-      'year': year,
-      'color': color,
-      'current_odometer': currentOdometer,
-      'notes': notes,
-      'created_at': createdAt,
-    };
-  }
+class Vehicle {
+  final String id;
+  final String nama;
+  final String merk;
+  final String plat;
+  final int tahun;
+  final String warna;
+  final String tipe;
+  final int cc;
+  final int km;
+  final List<MaintItem> maint;
 
-  factory Vehicle.fromMap(Map<String, Object?> map) {
-    return Vehicle(
-      id: map['id'] as int?,
-      customerId: map['customer_id'] as int,
-      plateNumber: map['plate_number'] as String,
-      brand: map['brand'] as String,
-      model: map['model'] as String,
-      year: map['year'] as int?,
-      color: map['color'] as String?,
-      currentOdometer: map['current_odometer'] as int?,
-      notes: map['notes'] as String?,
-      createdAt: map['created_at'] as String,
-    );
-  }
+  const Vehicle({
+    required this.id,
+    required this.nama,
+    required this.merk,
+    required this.plat,
+    required this.tahun,
+    required this.warna,
+    required this.tipe,
+    required this.cc,
+    required this.km,
+    required this.maint,
+  });
+
+  List<MaintComputed> computeMaint() =>
+      maint.map((m) => m.compute(km)).toList();
+
+  int get dueCount =>
+      computeMaint().where((m) => m.status != MaintStatus.aman).length;
 }
