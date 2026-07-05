@@ -23,18 +23,18 @@ class Sparepart {
       );
 
   Map<String, dynamic> toJson() => {
-    'id': id,
     'nama': nama,
     'kategori': kategori,
     'harga': harga,
     'stok': stok,
   };
 
-  factory Sparepart.fromJson(Map<String, dynamic> json) => Sparepart(
-    id: json['id'] as String,
-    nama: json['nama'] as String,
-    kategori: json['kategori'] as String,
-    harga: json['harga'] as int,
-    stok: json['stok'] as int,
-  );
+  factory Sparepart.fromJson(String id, Map<String, dynamic> json) =>
+      Sparepart(
+        id: id,
+        nama: json['nama'] as String,
+        kategori: json['kategori'] as String,
+        harga: json['harga'] as int,
+        stok: json['stok'] as int,
+      );
 }

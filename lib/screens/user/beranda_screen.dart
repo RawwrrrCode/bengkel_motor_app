@@ -9,7 +9,7 @@ import '../../utils/snackbar.dart';
 import '../../widgets/tab_shell.dart';
 import '../../widgets/top_bar.dart';
 import '../../widgets/vehicle_card.dart';
-import 'booking/booking_flow_screen.dart';
+import 'bengkel_list_screen.dart';
 import 'histori_detail_screen.dart';
 import 'perawatan_rutin_screen.dart';
 import 'vehicle_detail_screen.dart';
@@ -32,7 +32,7 @@ class BerandaScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: TopBar(
-        title: 'Halo, Andi',
+        title: 'Halo, ${app.displayName}',
         subtitle: 'Ayo rawat motormu hari ini',
         showLogo: true,
         showBell: true,
@@ -42,15 +42,14 @@ class BerandaScreen extends StatelessWidget {
           context.read<AppProvider>().setRole(UserRole.bengkel);
           showDemoSnackbar(context, 'Berpindah ke Tampilan Bengkel');
         },
+        onLogout: () => context.read<AppProvider>().signOut(),
       ),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
         children: [
           if (active != null) _ActiveServiceCard(service: active),
           if (active != null) const SizedBox(height: 18),
-          _AjukanServiceButton(
-            vehId: app.vehicles.isNotEmpty ? app.vehicles.first.id : null,
-          ),
+          const _AjukanServiceButton(),
           const SizedBox(height: 18),
           _SectionHeader(
             title: 'Perawatan Perlu Dicek',
@@ -402,9 +401,7 @@ class _SectionHeader extends StatelessWidget {
 }
 
 class _AjukanServiceButton extends StatelessWidget {
-  final String? vehId;
-
-  const _AjukanServiceButton({required this.vehId});
+  const _AjukanServiceButton();
 
   @override
   Widget build(BuildContext context) {
@@ -413,7 +410,10 @@ class _AjukanServiceButton extends StatelessWidget {
       borderRadius: BorderRadius.circular(18),
       child: InkWell(
         borderRadius: BorderRadius.circular(18),
-        onTap: () => openBookingFlow(context, vehId: vehId),
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const BengkelListScreen()),
+        ),
         child: Container(
           decoration: BoxDecoration(
             border: Border.all(color: AppColors.cardBorder),

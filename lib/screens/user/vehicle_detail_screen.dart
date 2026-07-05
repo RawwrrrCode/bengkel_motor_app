@@ -6,7 +6,7 @@ import '../../theme/app_colors.dart';
 import '../../utils/formatters.dart';
 import '../../widgets/maint_progress_card.dart';
 import '../../widgets/top_bar.dart';
-import 'booking/booking_flow_screen.dart';
+import 'bengkel_list_screen.dart';
 import 'perawatan_rutin_screen.dart';
 
 class VehicleDetailScreen extends StatelessWidget {
@@ -172,7 +172,11 @@ class VehicleDetailScreen extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: FilledButton(
-              onPressed: () => openBookingFlow(context, vehId: vehicle.id),
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => BengkelListScreen(vehId: vehicle.id)),
+              ),
               style: FilledButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 padding: const EdgeInsets.symmetric(vertical: 15),

@@ -1,5 +1,6 @@
 class Bengkel {
   final String id;
+  final String ownerUid;
   final String nama;
   final String alamat;
   final double rating;
@@ -12,6 +13,7 @@ class Bengkel {
 
   const Bengkel({
     required this.id,
+    required this.ownerUid,
     required this.nama,
     required this.alamat,
     required this.rating,
@@ -25,6 +27,7 @@ class Bengkel {
 
   Bengkel copyWith({double? rating, int? ulasan}) => Bengkel(
     id: id,
+    ownerUid: ownerUid,
     nama: nama,
     alamat: alamat,
     rating: rating ?? this.rating,
@@ -37,7 +40,7 @@ class Bengkel {
   );
 
   Map<String, dynamic> toJson() => {
-    'id': id,
+    'ownerUid': ownerUid,
     'nama': nama,
     'alamat': alamat,
     'rating': rating,
@@ -49,8 +52,9 @@ class Bengkel {
     'verified': verified,
   };
 
-  factory Bengkel.fromJson(Map<String, dynamic> json) => Bengkel(
-    id: json['id'] as String,
+  factory Bengkel.fromJson(String id, Map<String, dynamic> json) => Bengkel(
+    id: id,
+    ownerUid: json['ownerUid'] as String,
     nama: json['nama'] as String,
     alamat: json['alamat'] as String,
     rating: (json['rating'] as num).toDouble(),

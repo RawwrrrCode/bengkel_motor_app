@@ -7,7 +7,9 @@ import '../../widgets/top_bar.dart';
 import 'bengkel_detail_screen.dart';
 
 class BengkelListScreen extends StatelessWidget {
-  const BengkelListScreen({super.key});
+  final String? vehId;
+
+  const BengkelListScreen({super.key, this.vehId});
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +25,9 @@ class BengkelListScreen extends StatelessWidget {
                   child: BengkelCard(
                     bengkel: b,
                     onTap: () => Navigator.push(
-                        context, MaterialPageRoute(builder: (_) => BengkelDetailScreen(bengkelId: b.id))),
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => BengkelDetailScreen(bengkelId: b.id, vehId: vehId))),
                   ),
                 ))
             .toList(),

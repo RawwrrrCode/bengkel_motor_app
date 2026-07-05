@@ -24,8 +24,9 @@ class HistoriDetailScreen extends StatelessWidget {
     }
     final bengkel = app.bengkelById(svc.bengkelId);
     final badge = svc.status.badge;
+    final isMine = svc.customerUid == app.myUid;
     final canCancel =
-        svc.mine &&
+        isMine &&
         (svc.status == ServiceStatus.menunggu ||
             svc.status == ServiceStatus.dikonfirmasi);
 
@@ -354,7 +355,7 @@ class HistoriDetailScreen extends StatelessWidget {
                     ),
                   ),
                 ],
-                if (svc.status == ServiceStatus.selesai && svc.mine) ...[
+                if (svc.status == ServiceStatus.selesai && isMine) ...[
                   const SizedBox(height: 16),
                   Container(
                     decoration: BoxDecoration(

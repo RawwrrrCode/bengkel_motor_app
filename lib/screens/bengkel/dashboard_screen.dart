@@ -16,7 +16,7 @@ class DashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final app = context.watch<AppProvider>();
-    final all = app.servicesForBengkel(currentBengkelId);
+    final all = app.servicesForBengkel(app.myBengkelId!);
     final incoming = all.where((s) => s.status != ServiceStatus.selesai && s.status != ServiceStatus.batal).toList();
     final selesai = all.where((s) => s.status == ServiceStatus.selesai).toList();
     final menunggu = incoming.where((s) => s.status == ServiceStatus.menunggu).length;
@@ -35,12 +35,13 @@ class DashboardScreen extends StatelessWidget {
     return Scaffold(
       appBar: TopBar(
         title: 'Dashboard',
-        subtitle: 'Jaya Motor',
+        subtitle: app.myBengkel?.nama ?? '',
         showLogo: true,
         onSwitchRole: () {
           context.read<AppProvider>().setRole(UserRole.user);
           showDemoSnackbar(context, 'Berpindah ke Tampilan User');
         },
+        onLogout: () => context.read<AppProvider>().signOut(),
       ),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),

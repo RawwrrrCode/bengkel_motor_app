@@ -19,7 +19,7 @@ import 'booking_step4_success.dart';
 Future<void> openBookingFlow(
   BuildContext context, {
   String? vehId,
-  String? bengkelId,
+  required String bengkelId,
 }) {
   final app = context.read<AppProvider>();
   final tabController = TabIndexScope.of(context);
@@ -228,7 +228,7 @@ class _FooterButtons extends StatelessWidget {
           const SizedBox(width: 12),
           Expanded(
             child: FilledButton(
-              onPressed: () {
+              onPressed: () async {
                 if (isLastStep) {
                   final app = context.read<AppProvider>();
                   if (app.isSlotTaken(
@@ -242,7 +242,7 @@ class _FooterButtons extends StatelessWidget {
                     );
                     return;
                   }
-                  controller.submit(app);
+                  await controller.submit(app);
                 } else {
                   controller.next();
                 }

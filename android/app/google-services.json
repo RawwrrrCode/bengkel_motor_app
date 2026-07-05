@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "343708991520",
+    "project_id": "the-bengkelku",
+    "storage_bucket": "the-bengkelku.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:343708991520:android:ab4df514792371fe553c45",
+        "android_client_info": {
+          "package_name": "com.bengkel.bengkel_motor_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDTpL3vlgoEuIYUDACXPRPWc7Sj2ZoLJyI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

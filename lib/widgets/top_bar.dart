@@ -12,6 +12,7 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback? onBellTap;
   final VoidCallback? onPlus;
   final VoidCallback? onSwitchRole;
+  final VoidCallback? onLogout;
 
   const TopBar({
     super.key,
@@ -24,6 +25,7 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
     this.onBellTap,
     this.onPlus,
     this.onSwitchRole,
+    this.onLogout,
   });
 
   @override
@@ -112,6 +114,11 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
             Padding(
               padding: const EdgeInsets.only(left: 6),
               child: _iconButton(icon: Icons.swap_horiz, onTap: onSwitchRole),
+            ),
+          if (onLogout != null)
+            Padding(
+              padding: const EdgeInsets.only(left: 6),
+              child: _iconButton(icon: Icons.logout, onTap: onLogout),
             ),
         ],
       ),

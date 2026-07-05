@@ -13,9 +13,9 @@ const jenisLayananList = [
 const jamSlotList = ['09.00', '10.00', '11.00', '13.00', '14.00', '15.00'];
 
 class BookingFlowController extends ChangeNotifier {
-  BookingFlowController({String? initialVehId, String? initialBengkelId})
+  BookingFlowController({String? initialVehId, required String initialBengkelId})
       : vehId = initialVehId,
-        bengkelId = initialBengkelId ?? currentBengkelId;
+        bengkelId = initialBengkelId;
 
   int step = 1;
   String? vehId;
@@ -74,9 +74,9 @@ class BookingFlowController extends ChangeNotifier {
     return false;
   }
 
-  void submit(AppProvider appProvider) {
+  Future<void> submit(AppProvider appProvider) async {
     if (vehId == null) return;
-    newId = appProvider.submitServiceRequest(
+    newId = await appProvider.submitServiceRequest(
       vehId: vehId!,
       bengkelId: bengkelId,
       jenis: jenis,

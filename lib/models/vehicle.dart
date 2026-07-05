@@ -132,6 +132,7 @@ class MaintItem {
 
 class Vehicle {
   final String id;
+  final String ownerUid;
   final String nama;
   final String merk;
   final String plat;
@@ -144,6 +145,7 @@ class Vehicle {
 
   const Vehicle({
     required this.id,
+    required this.ownerUid,
     required this.nama,
     required this.merk,
     required this.plat,
@@ -162,7 +164,7 @@ class Vehicle {
       computeMaint().where((m) => m.status != MaintStatus.aman).length;
 
   Map<String, dynamic> toJson() => {
-    'id': id,
+    'ownerUid': ownerUid,
     'nama': nama,
     'merk': merk,
     'plat': plat,
@@ -174,8 +176,9 @@ class Vehicle {
     'maint': maint.map((m) => m.toJson()).toList(),
   };
 
-  factory Vehicle.fromJson(Map<String, dynamic> json) => Vehicle(
-    id: json['id'] as String,
+  factory Vehicle.fromJson(String id, Map<String, dynamic> json) => Vehicle(
+    id: id,
+    ownerUid: json['ownerUid'] as String,
     nama: json['nama'] as String,
     merk: json['merk'] as String,
     plat: json['plat'] as String,

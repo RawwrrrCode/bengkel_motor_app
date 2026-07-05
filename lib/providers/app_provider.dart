@@ -1,127 +1,331 @@
-import 'dart:convert';
+import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../database/seed_data.dart';
+import '../models/app_user.dart';
 import '../models/bengkel.dart';
 import '../models/jasa.dart';
 import '../models/service_request.dart';
 import '../models/sparepart.dart';
 import '../models/vehicle.dart';
 
-enum UserRole { user, bengkel }
-
-const currentBengkelId = 'b1';
-const currentCustomerName = 'Andi Pratama';
-
-const _prefsKey = 'bengkelku_state_v1';
+export '../models/app_user.dart' show UserRole;
 
 class AppProvider extends ChangeNotifier {
-  UserRole _role = UserRole.user;
-  bool _roleChosen = false;
-  final List<Vehicle> _vehicles = seedVehicles();
-  final List<Bengkel> _bengkels = seedBengkels();
-  final List<Sparepart> _spareparts = seedSpareparts();
-  final List<Jasa> _jasaList = seedJasa();
-  final List<ServiceRequest> _serviceRequests = seedServiceRequests();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
 
-  /// Loads any previously-saved state, replacing the seed defaults if found.
-  /// Vehicles are never mutated so they're always left as seeded. Call once
-  /// at startup, before the app is shown, so there's no flash of seed data.
-  Future<void> loadPersisted() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final raw = prefs.getString(_prefsKey);
-      if (raw == null) return;
-      final json = jsonDecode(raw) as Map<String, dynamic>;
+  StreamSubscription<User?>? _authSub;
+  StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>? _profileSub;
+  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? _vehiclesSub;
+  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? _bengkelsSub;
+  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? _myRequestsSub;
+  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? _bengkelRequestsSub;
+  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? _sparepartsSub;
+  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? _jasaSub;
 
-      _role = UserRole.values.byName(json['role'] as String);
-      _roleChosen = json['roleChosen'] as bool;
-      if (json['vehicles'] != null) {
-        _vehicles
-          ..clear()
-          ..addAll(
-            (json['vehicles'] as List).map(
-              (e) => Vehicle.fromJson(e as Map<String, dynamic>),
-            ),
-          );
-      }
-      _spareparts
-        ..clear()
-        ..addAll(
-          (json['spareparts'] as List).map(
-            (e) => Sparepart.fromJson(e as Map<String, dynamic>),
-          ),
-        );
-      if (json['jasaList'] != null) {
-        _jasaList
-          ..clear()
-          ..addAll(
-            (json['jasaList'] as List).map(
-              (e) => Jasa.fromJson(e as Map<String, dynamic>),
-            ),
-          );
-      }
-      if (json['bengkels'] != null) {
-        _bengkels
-          ..clear()
-          ..addAll(
-            (json['bengkels'] as List).map(
-              (e) => Bengkel.fromJson(e as Map<String, dynamic>),
-            ),
-          );
-      }
-      _serviceRequests
-        ..clear()
-        ..addAll(
-          (json['serviceRequests'] as List).map(
-            (e) => ServiceRequest.fromJson(e as Map<String, dynamic>),
-          ),
-        );
+  User? _firebaseUser;
+  AppUser? _profile;
+  bool _profileFetching = false;
+
+  List<Vehicle> _vehicles = [];
+  List<Bengkel> _bengkels = [];
+  List<Sparepart> _spareparts = [];
+  List<Jasa> _jasaList = [];
+  List<ServiceRequest> _myRequests = [];
+  List<ServiceRequest> _bengkelRequests = [];
+
+  AppProvider() {
+    _authSub = _auth.authStateChanges().listen(_onAuthChanged);
+  }
+
+  void _onAuthChanged(User? user) {
+    _firebaseUser = user;
+    _profileSub?.cancel();
+    _clearRoleScoped();
+    _profile = null;
+    _vehiclesSub?.cancel();
+
+    if (user == null) {
+      _profileFetching = false;
+      _vehicles = [];
       notifyListeners();
-    } catch (_) {
-      // Corrupted/old-schema save data — keep the fresh seed defaults.
+      return;
+    }
+
+    _profileFetching = true;
+
+    _vehiclesSub = _db
+        .collection('vehicles')
+        .where('ownerUid', isEqualTo: user.uid)
+        .snapshots()
+        .listen((snap) {
+          _vehicles = snap.docs
+              .map((d) => Vehicle.fromJson(d.id, d.data()))
+              .toList();
+          notifyListeners();
+        });
+
+    _bengkelsSub = _db.collection('bengkels').snapshots().listen((snap) {
+      _bengkels = snap.docs
+          .map((d) => Bengkel.fromJson(d.id, d.data()))
+          .toList();
+      notifyListeners();
+    });
+
+    _myRequestsSub = _db
+        .collection('serviceRequests')
+        .where('customerUid', isEqualTo: user.uid)
+        .snapshots()
+        .listen((snap) {
+          _myRequests =
+              snap.docs
+                  .map((d) => ServiceRequest.fromJson(d.id, d.data()))
+                  .toList()
+                ..sort((a, b) => b.tanggal.compareTo(a.tanggal));
+          notifyListeners();
+        });
+
+    _profileSub = _db.collection('users').doc(user.uid).snapshots().listen((
+      snap,
+    ) {
+      final data = snap.data();
+      final newProfile = data == null
+          ? null
+          : AppUser.fromJson(user.uid, data);
+      final oldBengkelId = _profile?.bengkelId;
+      _profile = newProfile;
+      _profileFetching = false;
+      if (newProfile?.bengkelId != oldBengkelId) {
+        _resubscribeBengkelScoped(newProfile?.bengkelId);
+      }
+      notifyListeners();
+    });
+
+    notifyListeners();
+  }
+
+  void _clearRoleScoped() {
+    _bengkelsSub?.cancel();
+    _myRequestsSub?.cancel();
+    _bengkelRequestsSub?.cancel();
+    _sparepartsSub?.cancel();
+    _jasaSub?.cancel();
+    _bengkels = [];
+    _myRequests = [];
+    _bengkelRequests = [];
+    _spareparts = [];
+    _jasaList = [];
+  }
+
+  void _resubscribeBengkelScoped(String? bengkelId) {
+    _bengkelRequestsSub?.cancel();
+    _sparepartsSub?.cancel();
+    _jasaSub?.cancel();
+
+    if (bengkelId == null) {
+      _bengkelRequests = [];
+      _spareparts = [];
+      _jasaList = [];
+      notifyListeners();
+      return;
+    }
+
+    _bengkelRequestsSub = _db
+        .collection('serviceRequests')
+        .where('bengkelId', isEqualTo: bengkelId)
+        .snapshots()
+        .listen((snap) {
+          _bengkelRequests =
+              snap.docs
+                  .map((d) => ServiceRequest.fromJson(d.id, d.data()))
+                  .toList()
+                ..sort((a, b) => b.tanggal.compareTo(a.tanggal));
+          notifyListeners();
+        });
+
+    _sparepartsSub = _db
+        .collection('bengkels')
+        .doc(bengkelId)
+        .collection('spareparts')
+        .snapshots()
+        .listen((snap) {
+          _spareparts = snap.docs
+              .map((d) => Sparepart.fromJson(d.id, d.data()))
+              .toList();
+          notifyListeners();
+        });
+
+    _jasaSub = _db
+        .collection('bengkels')
+        .doc(bengkelId)
+        .collection('jasa')
+        .snapshots()
+        .listen((snap) {
+          _jasaList = snap.docs
+              .map((d) => Jasa.fromJson(d.id, d.data()))
+              .toList();
+          notifyListeners();
+        });
+  }
+
+  @override
+  void dispose() {
+    _authSub?.cancel();
+    _profileSub?.cancel();
+    _vehiclesSub?.cancel();
+    _bengkelsSub?.cancel();
+    _myRequestsSub?.cancel();
+    _bengkelRequestsSub?.cancel();
+    _sparepartsSub?.cancel();
+    _jasaSub?.cancel();
+    super.dispose();
+  }
+
+  // ---- Auth & profile ----
+
+  bool get isLoggedIn => _firebaseUser != null;
+  String? get myUid => _firebaseUser?.uid;
+  bool get profileLoading => isLoggedIn && _profileFetching;
+  AppUser? get profile => _profile;
+  UserRole get role => _profile?.activeRole ?? UserRole.user;
+  String? get myBengkelId => _profile?.bengkelId;
+  Bengkel? get myBengkel => bengkelById(myBengkelId);
+  String get displayName => _profile?.displayName ?? '';
+
+  Future<String?> registerWithEmail({
+    required String email,
+    required String password,
+    required String displayName,
+    required UserRole role,
+  }) async {
+    try {
+      final cred = await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      final uid = cred.user!.uid;
+      await _db
+          .collection('users')
+          .doc(uid)
+          .set(
+            AppUser(
+              uid: uid,
+              email: email,
+              displayName: displayName,
+              activeRole: role,
+            ).toJson(),
+          );
+      return null;
+    } on FirebaseAuthException catch (e) {
+      return _authErrorMessage(e);
     }
   }
 
-  Future<void> _persist() async {
-    final prefs = await SharedPreferences.getInstance();
-    final json = {
-      'role': _role.name,
-      'roleChosen': _roleChosen,
-      'vehicles': _vehicles.map((v) => v.toJson()).toList(),
-      'spareparts': _spareparts.map((p) => p.toJson()).toList(),
-      'jasaList': _jasaList.map((j) => j.toJson()).toList(),
-      'bengkels': _bengkels.map((b) => b.toJson()).toList(),
-      'serviceRequests': _serviceRequests.map((s) => s.toJson()).toList(),
-    };
-    await prefs.setString(_prefsKey, jsonEncode(json));
+  Future<String?> signInWithEmail({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      await _auth.signInWithEmailAndPassword(email: email, password: password);
+      return null;
+    } on FirebaseAuthException catch (e) {
+      return _authErrorMessage(e);
+    }
   }
 
-  UserRole get role => _role;
-  bool get roleChosen => _roleChosen;
+  Future<void> signOut() => _auth.signOut();
+
+  String _authErrorMessage(FirebaseAuthException e) {
+    switch (e.code) {
+      case 'email-already-in-use':
+        return 'Email sudah terdaftar.';
+      case 'invalid-email':
+        return 'Format email tidak valid.';
+      case 'weak-password':
+        return 'Password minimal 6 karakter.';
+      case 'user-not-found':
+      case 'wrong-password':
+      case 'invalid-credential':
+        return 'Email atau password salah.';
+      default:
+        return e.message ?? 'Terjadi kesalahan. Coba lagi.';
+    }
+  }
+
+  /// Used by the small "Ganti Peran" quick-switch affordance once inside the app.
+  Future<void> setRole(UserRole role) async {
+    final uid = _firebaseUser?.uid;
+    if (uid == null) return;
+    await _db.collection('users').doc(uid).update({'activeRole': role.name});
+  }
+
+  /// Onboarding for a first-time bengkel owner: creates their `bengkels` doc
+  /// and seeds a starter sparepart/jasa catalog so they don't start empty.
+  Future<void> completeBengkelSetup({
+    required String nama,
+    required String alamat,
+    required String jam,
+    required String spesialis,
+  }) async {
+    final uid = _firebaseUser?.uid;
+    if (uid == null) return;
+    final bengkelRef = _db.collection('bengkels').doc();
+    // The bengkel doc must exist before the security rules' `ownsBengkel()`
+    // check (which reads it back via `get()`) can authorize writes to its
+    // spareparts/jasa subcollections — so this can't all be one batch.
+    await bengkelRef.set(
+      Bengkel(
+        id: bengkelRef.id,
+        ownerUid: uid,
+        nama: nama,
+        alamat: alamat,
+        rating: 0,
+        ulasan: 0,
+        jarak: '-',
+        jam: jam,
+        buka: true,
+        spesialis: spesialis,
+        verified: false,
+      ).toJson(),
+    );
+    final batch = _db.batch();
+    for (final p in seedSpareparts()) {
+      batch.set(bengkelRef.collection('spareparts').doc(), p.toJson());
+    }
+    for (final j in seedJasa()) {
+      batch.set(bengkelRef.collection('jasa').doc(), j.toJson());
+    }
+    batch.update(_db.collection('users').doc(uid), {
+      'bengkelId': bengkelRef.id,
+    });
+    await batch.commit();
+  }
+
+  // ---- Data getters ----
+
   List<Vehicle> get vehicles => List.unmodifiable(_vehicles);
   List<Bengkel> get bengkels => List.unmodifiable(_bengkels);
   List<Sparepart> get spareparts => List.unmodifiable(_spareparts);
   List<Jasa> get jasaList => List.unmodifiable(_jasaList);
-  List<ServiceRequest> get serviceRequests =>
-      List.unmodifiable(_serviceRequests);
 
-  /// Used by the initial role-selection screen.
-  void chooseRole(UserRole role) {
-    _role = role;
-    _roleChosen = true;
-    notifyListeners();
-    _persist();
-  }
-
-  /// Used by the small "Ganti Peran" quick-switch affordance once inside the app.
-  void setRole(UserRole role) {
-    if (_role == role) return;
-    _role = role;
-    notifyListeners();
-    _persist();
+  /// Merges the two categories of `serviceRequests` this account is allowed
+  /// to read under the security rules: ones this uid filed as a customer,
+  /// and (if this uid owns a bengkel) ones filed against that bengkel.
+  List<ServiceRequest> get serviceRequests {
+    final map = <String, ServiceRequest>{};
+    for (final s in _bengkelRequests) {
+      map[s.id] = s;
+    }
+    for (final s in _myRequests) {
+      map[s.id] = s;
+    }
+    final list = map.values.toList()
+      ..sort((a, b) => b.tanggal.compareTo(a.tanggal));
+    return List.unmodifiable(list);
   }
 
   Vehicle? vehicleById(String? id) {
@@ -145,14 +349,13 @@ class AppProvider extends ChangeNotifier {
   ServiceRequest? serviceById(String? id) {
     if (id == null) return null;
     try {
-      return _serviceRequests.firstWhere((s) => s.id == id);
+      return serviceRequests.firstWhere((s) => s.id == id);
     } catch (_) {
       return null;
     }
   }
 
-  List<ServiceRequest> get myServices =>
-      _serviceRequests.where((s) => s.mine).toList();
+  List<ServiceRequest> get myServices => List.unmodifiable(_myRequests);
 
   ServiceRequest? get activeMyService {
     try {
@@ -167,13 +370,28 @@ class AppProvider extends ChangeNotifier {
   }
 
   List<ServiceRequest> servicesForBengkel(String bengkelId) =>
-      _serviceRequests.where((s) => s.bengkelId == bengkelId).toList();
+      _bengkelRequests.where((s) => s.bengkelId == bengkelId).toList();
+
+  /// One-shot read of another bengkel's public catalog (e.g. for a customer
+  /// browsing `BengkelDetailScreen`) — not live-streamed like [spareparts],
+  /// since that getter only tracks the signed-in bengkel owner's own catalog.
+  Future<List<Sparepart>> fetchSparepartsFor(String bengkelId) async {
+    final snap = await _db
+        .collection('bengkels')
+        .doc(bengkelId)
+        .collection('spareparts')
+        .get();
+    return snap.docs.map((d) => Sparepart.fromJson(d.id, d.data())).toList();
+  }
 
   /// Whether [bengkelId] already has an active (non-cancelled) booking at
   /// [jam] on [tanggal] — used to stop the booking flow from double-booking
-  /// the same slot.
+  /// the same slot. Best-effort: only sees requests this account is allowed
+  /// to read (its own bookings, plus its own bengkel's if it owns one), so
+  /// conflicts between two other customers at a bengkel this account doesn't
+  /// own aren't visible here.
   bool isSlotTaken(String bengkelId, DateTime tanggal, String jam) {
-    return _serviceRequests.any(
+    return serviceRequests.any(
       (s) =>
           s.bengkelId == bengkelId &&
           s.status != ServiceStatus.batal &&
@@ -184,20 +402,21 @@ class AppProvider extends ChangeNotifier {
     );
   }
 
-  String submitServiceRequest({
+  Future<String> submitServiceRequest({
     required String vehId,
     required String bengkelId,
     required String jenis,
     required DateTime tanggal,
     required String jam,
     required String keluhan,
-  }) {
+  }) async {
+    final uid = _firebaseUser!.uid;
     final vehicle = vehicleById(vehId);
-    final id = 'SVC-${2080 + (DateTime.now().microsecond % 90)}';
+    final id = 'SVC-${DateTime.now().millisecondsSinceEpoch % 100000}';
     final request = ServiceRequest(
       id: id,
-      customer: currentCustomerName,
-      mine: true,
+      customer: displayName,
+      customerUid: uid,
       vehId: vehId,
       vehLabel: vehicle != null ? '${vehicle.nama} · ${vehicle.plat}' : '',
       bengkelId: bengkelId,
@@ -208,194 +427,211 @@ class AppProvider extends ChangeNotifier {
       keluhan: keluhan.isEmpty ? '-' : keluhan,
       biaya: 0,
     );
-    _serviceRequests.insert(0, request);
-    notifyListeners();
-    _persist();
+    await _db.collection('serviceRequests').doc(id).set(request.toJson());
     return id;
   }
 
-  void advanceStatus(String id) {
-    final index = _serviceRequests.indexWhere((s) => s.id == id);
-    if (index == -1) return;
-    final current = _serviceRequests[index];
+  Future<void> advanceStatus(String id) async {
+    final current = serviceById(id);
+    if (current == null) return;
     final next = current.status.nextStatus;
     if (next == null) return;
-    _serviceRequests[index] = current.copyWith(status: next);
-    notifyListeners();
-    _persist();
+    await _db.collection('serviceRequests').doc(id).update({
+      'status': next.name,
+    });
   }
 
   /// Advances a 'dikerjakan' request straight to 'selesai', recording the
   /// itemized cost breakdown the bengkel entered (biaya is derived from items).
   /// [stockDeductions] maps sparepart id -> qty used, so stock picked in the
   /// rincian biaya picker is deducted from the sparepart catalog.
-  void completeService(
+  Future<void> completeService(
     String id,
     List<ServiceItem> items, {
     Map<String, int> stockDeductions = const {},
-  }) {
-    final index = _serviceRequests.indexWhere((s) => s.id == id);
-    if (index == -1) return;
+  }) async {
     final biaya = items.fold<int>(0, (a, i) => a + i.subtotal);
-    _serviceRequests[index] = _serviceRequests[index].copyWith(
-      status: ServiceStatus.selesai,
-      items: items,
-      biaya: biaya,
-    );
-    for (final entry in stockDeductions.entries) {
-      final sIndex = _spareparts.indexWhere((s) => s.id == entry.key);
-      if (sIndex == -1) continue;
-      final current = _spareparts[sIndex];
-      final newStok = current.stok - entry.value;
-      _spareparts[sIndex] = current.copyWith(stok: newStok < 0 ? 0 : newStok);
+    final batch = _db.batch();
+    batch.update(_db.collection('serviceRequests').doc(id), {
+      'status': ServiceStatus.selesai.name,
+      'items': items.map((i) => i.toJson()).toList(),
+      'biaya': biaya,
+    });
+    final bengkelId = myBengkelId;
+    if (bengkelId != null) {
+      final sparepartsRef = _db
+          .collection('bengkels')
+          .doc(bengkelId)
+          .collection('spareparts');
+      for (final entry in stockDeductions.entries) {
+        Sparepart? sparepart;
+        for (final s in _spareparts) {
+          if (s.id == entry.key) {
+            sparepart = s;
+            break;
+          }
+        }
+        if (sparepart == null) continue;
+        final newStok = sparepart.stok - entry.value;
+        batch.update(sparepartsRef.doc(entry.key), {
+          'stok': newStok < 0 ? 0 : newStok,
+        });
+      }
     }
-    notifyListeners();
-    _persist();
+    await batch.commit();
   }
 
   /// Used by the bengkel side to reject an incoming request, optionally
   /// recording why so the customer can see it in their histori.
-  void rejectRequest(String id, {String alasan = ''}) {
-    final index = _serviceRequests.indexWhere((s) => s.id == id);
-    if (index == -1) return;
-    _serviceRequests[index] = _serviceRequests[index].copyWith(
-      status: ServiceStatus.batal,
-      alasanBatal: alasan.isEmpty ? 'Ditolak oleh bengkel' : alasan,
-    );
-    notifyListeners();
-    _persist();
+  Future<void> rejectRequest(String id, {String alasan = ''}) async {
+    await _db.collection('serviceRequests').doc(id).update({
+      'status': ServiceStatus.batal.name,
+      'alasanBatal': alasan.isEmpty ? 'Ditolak oleh bengkel' : alasan,
+    });
   }
 
   /// Used by the customer to cancel their own still-pending request. Only
   /// allowed before the bengkel has started working on it.
-  void cancelRequest(String id) {
-    final index = _serviceRequests.indexWhere((s) => s.id == id);
-    if (index == -1) return;
-    final current = _serviceRequests[index];
+  Future<void> cancelRequest(String id) async {
+    final current = serviceById(id);
+    if (current == null) return;
     if (current.status != ServiceStatus.menunggu &&
         current.status != ServiceStatus.dikonfirmasi) {
       return;
     }
-    _serviceRequests[index] = current.copyWith(
-      status: ServiceStatus.batal,
-      alasanBatal: 'Dibatalkan oleh pelanggan',
-    );
-    notifyListeners();
-    _persist();
+    await _db.collection('serviceRequests').doc(id).update({
+      'status': ServiceStatus.batal.name,
+      'alasanBatal': 'Dibatalkan oleh pelanggan',
+    });
   }
 
-  void saveSaran(
+  Future<void> saveSaran(
     String id, {
     required String saran,
     required String saranBulan,
-  }) {
-    final index = _serviceRequests.indexWhere((s) => s.id == id);
-    if (index == -1) return;
-    final current = _serviceRequests[index];
-    _serviceRequests[index] = current.copyWith(
-      saran: saran,
-      saranBulan: saranBulan.isEmpty ? current.saranBulan : saranBulan,
-    );
-    notifyListeners();
-    _persist();
+  }) async {
+    final current = serviceById(id);
+    if (current == null) return;
+    await _db.collection('serviceRequests').doc(id).update({
+      'saran': saran,
+      'saranBulan': saranBulan.isEmpty ? current.saranBulan : saranBulan,
+    });
   }
 
   /// Records the customer's 1-5 star rating for a completed service and
   /// folds it into the bengkel's average rating. A service can only be
   /// rated once (rating stays 0 until then).
-  void rateService(String id, int rating) {
-    final index = _serviceRequests.indexWhere((s) => s.id == id);
-    if (index == -1) return;
-    final svc = _serviceRequests[index];
-    if (svc.rating != 0 || rating < 1 || rating > 5) return;
-    _serviceRequests[index] = svc.copyWith(rating: rating);
-
-    final bIndex = _bengkels.indexWhere((b) => b.id == svc.bengkelId);
-    if (bIndex != -1) {
-      final bengkel = _bengkels[bIndex];
+  Future<void> rateService(String id, int rating) async {
+    final svc = serviceById(id);
+    if (svc == null || svc.rating != 0 || rating < 1 || rating > 5) return;
+    final batch = _db.batch();
+    batch.update(_db.collection('serviceRequests').doc(id), {
+      'rating': rating,
+    });
+    final bengkel = bengkelById(svc.bengkelId);
+    if (bengkel != null) {
       final newUlasan = bengkel.ulasan + 1;
       final newRating =
           ((bengkel.rating * bengkel.ulasan) + rating) / newUlasan;
-      _bengkels[bIndex] = bengkel.copyWith(
-        rating: newRating,
-        ulasan: newUlasan,
-      );
+      batch.update(_db.collection('bengkels').doc(bengkel.id), {
+        'rating': newRating,
+        'ulasan': newUlasan,
+      });
     }
-    notifyListeners();
-    _persist();
+    await batch.commit();
   }
 
-  String _nextId(String prefix, Iterable<String> existingIds) {
-    var n = existingIds.length + 1;
-    while (existingIds.contains('$prefix$n')) {
-      n++;
-    }
-    return '$prefix$n';
-  }
-
-  void addSparepart({
+  Future<void> addSparepart({
     required String nama,
     required int harga,
     required int stok,
-  }) {
-    if (nama.isEmpty) return;
-    final id = _nextId('p', _spareparts.map((s) => s.id));
-    _spareparts.add(
-      Sparepart(id: id, nama: nama, kategori: 'Umum', harga: harga, stok: stok),
+  }) async {
+    final bengkelId = myBengkelId;
+    if (nama.isEmpty || bengkelId == null) return;
+    final ref = _db
+        .collection('bengkels')
+        .doc(bengkelId)
+        .collection('spareparts')
+        .doc();
+    await ref.set(
+      Sparepart(
+        id: ref.id,
+        nama: nama,
+        kategori: 'Umum',
+        harga: harga,
+        stok: stok,
+      ).toJson(),
     );
-    notifyListeners();
-    _persist();
   }
 
-  void updateSparepart(
+  Future<void> updateSparepart(
     String id, {
     required String nama,
     required int harga,
     required int stok,
-  }) {
-    final index = _spareparts.indexWhere((s) => s.id == id);
-    if (index == -1 || nama.isEmpty) return;
-    _spareparts[index] = _spareparts[index].copyWith(
-      nama: nama,
-      harga: harga,
-      stok: stok,
-    );
-    notifyListeners();
-    _persist();
+  }) async {
+    final bengkelId = myBengkelId;
+    if (nama.isEmpty || bengkelId == null) return;
+    await _db
+        .collection('bengkels')
+        .doc(bengkelId)
+        .collection('spareparts')
+        .doc(id)
+        .update({'nama': nama, 'harga': harga, 'stok': stok});
   }
 
-  void deleteSparepart(String id) {
-    _spareparts.removeWhere((s) => s.id == id);
-    notifyListeners();
-    _persist();
+  Future<void> deleteSparepart(String id) async {
+    final bengkelId = myBengkelId;
+    if (bengkelId == null) return;
+    await _db
+        .collection('bengkels')
+        .doc(bengkelId)
+        .collection('spareparts')
+        .doc(id)
+        .delete();
   }
 
-  void addJasa({required String nama, required int harga}) {
-    if (nama.isEmpty) return;
-    final id = _nextId('j', _jasaList.map((j) => j.id));
-    _jasaList.add(Jasa(id: id, nama: nama, harga: harga));
-    notifyListeners();
-    _persist();
+  Future<void> addJasa({required String nama, required int harga}) async {
+    final bengkelId = myBengkelId;
+    if (nama.isEmpty || bengkelId == null) return;
+    final ref = _db
+        .collection('bengkels')
+        .doc(bengkelId)
+        .collection('jasa')
+        .doc();
+    await ref.set(Jasa(id: ref.id, nama: nama, harga: harga).toJson());
   }
 
-  void updateJasa(String id, {required String nama, required int harga}) {
-    final index = _jasaList.indexWhere((j) => j.id == id);
-    if (index == -1 || nama.isEmpty) return;
-    _jasaList[index] = Jasa(id: id, nama: nama, harga: harga);
-    notifyListeners();
-    _persist();
+  Future<void> updateJasa(
+    String id, {
+    required String nama,
+    required int harga,
+  }) async {
+    final bengkelId = myBengkelId;
+    if (nama.isEmpty || bengkelId == null) return;
+    await _db
+        .collection('bengkels')
+        .doc(bengkelId)
+        .collection('jasa')
+        .doc(id)
+        .update({'nama': nama, 'harga': harga});
   }
 
-  void deleteJasa(String id) {
-    _jasaList.removeWhere((j) => j.id == id);
-    notifyListeners();
-    _persist();
+  Future<void> deleteJasa(String id) async {
+    final bengkelId = myBengkelId;
+    if (bengkelId == null) return;
+    await _db
+        .collection('bengkels')
+        .doc(bengkelId)
+        .collection('jasa')
+        .doc(id)
+        .delete();
   }
 
   /// Adds a new vehicle with no maintenance schedule yet — the user can
   /// still book service for it, it just won't show up under "Perawatan
   /// Perlu Dicek" until maintenance history exists.
-  void addVehicle({
+  Future<void> addVehicle({
     required String nama,
     required String merk,
     required String plat,
@@ -404,12 +640,14 @@ class AppProvider extends ChangeNotifier {
     required String tipe,
     required int cc,
     required int km,
-  }) {
-    if (nama.isEmpty || plat.isEmpty) return;
-    final id = _nextId('v', _vehicles.map((v) => v.id));
-    _vehicles.add(
+  }) async {
+    final uid = _firebaseUser?.uid;
+    if (nama.isEmpty || plat.isEmpty || uid == null) return;
+    final ref = _db.collection('vehicles').doc();
+    await ref.set(
       Vehicle(
-        id: id,
+        id: ref.id,
+        ownerUid: uid,
         nama: nama,
         merk: merk,
         plat: plat,
@@ -419,9 +657,7 @@ class AppProvider extends ChangeNotifier {
         cc: cc,
         km: km,
         maint: const [],
-      ),
+      ).toJson(),
     );
-    notifyListeners();
-    _persist();
   }
 }

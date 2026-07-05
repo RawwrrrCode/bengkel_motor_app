@@ -32,7 +32,7 @@ class _PengajuanListScreenState extends State<PengajuanListScreen> {
   Widget build(BuildContext context) {
     final app = context.watch<AppProvider>();
     final allIncoming = app
-        .servicesForBengkel(currentBengkelId)
+        .servicesForBengkel(app.myBengkelId!)
         .where(
           (s) =>
               s.status != ServiceStatus.selesai &&

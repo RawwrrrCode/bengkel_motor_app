@@ -5,10 +5,10 @@ class Jasa {
 
   const Jasa({required this.id, required this.nama, required this.harga});
 
-  Map<String, dynamic> toJson() => {'id': id, 'nama': nama, 'harga': harga};
+  Map<String, dynamic> toJson() => {'nama': nama, 'harga': harga};
 
-  factory Jasa.fromJson(Map<String, dynamic> json) => Jasa(
-        id: json['id'] as String,
+  factory Jasa.fromJson(String id, Map<String, dynamic> json) => Jasa(
+        id: id,
         nama: json['nama'] as String,
         harga: json['harga'] as int,
       );

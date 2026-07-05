@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import '../theme/app_colors.dart';
@@ -141,7 +142,7 @@ class ServiceItem {
 class ServiceRequest {
   final String id;
   final String customer;
-  final bool mine;
+  final String customerUid;
   final String? vehId;
   final String vehLabel;
   final String bengkelId;
@@ -160,7 +161,7 @@ class ServiceRequest {
   const ServiceRequest({
     required this.id,
     required this.customer,
-    required this.mine,
+    required this.customerUid,
     this.vehId,
     required this.vehLabel,
     required this.bengkelId,
@@ -177,6 +178,8 @@ class ServiceRequest {
     this.alasanBatal = '',
   });
 
+  bool isMine(String uid) => customerUid == uid;
+
   ServiceRequest copyWith({
     ServiceStatus? status,
     String? saran,
@@ -189,7 +192,7 @@ class ServiceRequest {
     return ServiceRequest(
       id: id,
       customer: customer,
-      mine: mine,
+      customerUid: customerUid,
       vehId: vehId,
       vehLabel: vehLabel,
       bengkelId: bengkelId,
@@ -208,13 +211,12 @@ class ServiceRequest {
   }
 
   Map<String, dynamic> toJson() => {
-    'id': id,
     'customer': customer,
-    'mine': mine,
+    'customerUid': customerUid,
     'vehId': vehId,
     'vehLabel': vehLabel,
     'bengkelId': bengkelId,
-    'tanggal': tanggal.toIso8601String(),
+    'tanggal': Timestamp.fromDate(tanggal),
     'jam': jam,
     'jenis': jenis,
     'status': status.name,
@@ -227,25 +229,26 @@ class ServiceRequest {
     'alasanBatal': alasanBatal,
   };
 
-  factory ServiceRequest.fromJson(Map<String, dynamic> json) => ServiceRequest(
-    id: json['id'] as String,
-    customer: json['customer'] as String,
-    mine: json['mine'] as bool,
-    vehId: json['vehId'] as String?,
-    vehLabel: json['vehLabel'] as String,
-    bengkelId: json['bengkelId'] as String,
-    tanggal: DateTime.parse(json['tanggal'] as String),
-    jam: json['jam'] as String,
-    jenis: json['jenis'] as String,
-    status: ServiceStatus.values.byName(json['status'] as String),
-    keluhan: json['keluhan'] as String,
-    biaya: json['biaya'] as int,
-    items: (json['items'] as List)
-        .map((i) => ServiceItem.fromJson(i as Map<String, dynamic>))
-        .toList(),
-    saran: json['saran'] as String,
-    saranBulan: json['saranBulan'] as String,
-    rating: json['rating'] as int? ?? 0,
-    alasanBatal: json['alasanBatal'] as String? ?? '',
-  );
+  factory ServiceRequest.fromJson(String id, Map<String, dynamic> json) =>
+      ServiceRequest(
+        id: id,
+        customer: json['customer'] as String,
+        customerUid: json['customerUid'] as String,
+        vehId: json['vehId'] as String?,
+        vehLabel: json['vehLabel'] as String,
+        bengkelId: json['bengkelId'] as String,
+        tanggal: (json['tanggal'] as Timestamp).toDate(),
+        jam: json['jam'] as String,
+        jenis: json['jenis'] as String,
+        status: ServiceStatus.values.byName(json['status'] as String),
+        keluhan: json['keluhan'] as String,
+        biaya: json['biaya'] as int,
+        items: (json['items'] as List)
+            .map((i) => ServiceItem.fromJson(i as Map<String, dynamic>))
+            .toList(),
+        saran: json['saran'] as String,
+        saranBulan: json['saranBulan'] as String,
+        rating: json['rating'] as int? ?? 0,
+        alasanBatal: json['alasanBatal'] as String? ?? '',
+      );
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../models/sparepart.dart';
 import '../../providers/app_provider.dart';
 import '../../theme/app_colors.dart';
 import '../../utils/formatters.dart';
@@ -9,23 +10,37 @@ import '../../widgets/empty_state.dart';
 import '../../widgets/top_bar.dart';
 import 'booking/booking_flow_screen.dart';
 
-class BengkelDetailScreen extends StatelessWidget {
+class BengkelDetailScreen extends StatefulWidget {
   final String bengkelId;
+  final String? vehId;
 
-  const BengkelDetailScreen({super.key, required this.bengkelId});
+  const BengkelDetailScreen({super.key, required this.bengkelId, this.vehId});
+
+  @override
+  State<BengkelDetailScreen> createState() => _BengkelDetailScreenState();
+}
+
+class _BengkelDetailScreenState extends State<BengkelDetailScreen> {
+  late Future<List<Sparepart>> _sparepartsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _sparepartsFuture = context.read<AppProvider>().fetchSparepartsFor(
+          widget.bengkelId,
+        );
+  }
 
   @override
   Widget build(BuildContext context) {
     final app = context.watch<AppProvider>();
-    final bengkel = app.bengkelById(bengkelId);
+    final bengkel = app.bengkelById(widget.bengkelId);
+    final vehId = widget.vehId;
     if (bengkel == null) {
       return const Scaffold(
         body: Center(child: Text('Bengkel tidak ditemukan')),
       );
     }
-
-    final hasParts = bengkel.id == 'b1';
-    final spareparts = app.spareparts;
 
     return Scaffold(
       appBar: TopBar(
@@ -132,8 +147,8 @@ class BengkelDetailScreen extends StatelessWidget {
                   children: [
                     Expanded(
                       child: FilledButton(
-                        onPressed: () =>
-                            openBookingFlow(context, bengkelId: bengkel.id),
+                        onPressed: () => openBookingFlow(context,
+                            bengkelId: bengkel.id, vehId: vehId),
                         style: FilledButton.styleFrom(
                           backgroundColor: AppColors.primary,
                           padding: const EdgeInsets.symmetric(vertical: 13),
@@ -180,24 +195,33 @@ class BengkelDetailScreen extends StatelessWidget {
               ],
             ),
           ),
-          if (hasParts) ...[
-            const SizedBox(height: 16),
-            const Text(
-              'Katalog Sparepart & Harga',
-              style: TextStyle(
-                fontWeight: FontWeight.w800,
-                fontSize: 15,
-                color: AppColors.textPrimary,
-              ),
+          const SizedBox(height: 16),
+          const Text(
+            'Katalog Sparepart & Harga',
+            style: TextStyle(
+              fontWeight: FontWeight.w800,
+              fontSize: 15,
+              color: AppColors.textPrimary,
             ),
-            const SizedBox(height: 10),
-            if (spareparts.isEmpty)
-              const EmptyState(
-                icon: Icons.inventory_2_outlined,
-                message: 'Belum ada sparepart di katalog bengkel ini.',
-              )
-            else
-              Container(
+          ),
+          const SizedBox(height: 10),
+          FutureBuilder<List<Sparepart>>(
+            future: _sparepartsFuture,
+            builder: (context, snapshot) {
+              final spareparts = snapshot.data ?? const <Sparepart>[];
+              if (snapshot.connectionState != ConnectionState.done) {
+                return const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 24),
+                  child: Center(child: CircularProgressIndicator()),
+                );
+              }
+              if (spareparts.isEmpty) {
+                return const EmptyState(
+                  icon: Icons.inventory_2_outlined,
+                  message: 'Belum ada sparepart di katalog bengkel ini.',
+                );
+              }
+              return Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
                   border: Border.all(color: AppColors.cardBorder),
@@ -270,8 +294,9 @@ class BengkelDetailScreen extends StatelessWidget {
                     );
                   }).toList(),
                 ),
-              ),
-          ],
+              );
+            },
+          ),
         ],
       ),
     );

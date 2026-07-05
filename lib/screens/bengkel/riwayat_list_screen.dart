@@ -18,7 +18,7 @@ class RiwayatListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final app = context.watch<AppProvider>();
     final riwayat = app
-        .servicesForBengkel(currentBengkelId)
+        .servicesForBengkel(app.myBengkelId!)
         .where((s) => s.status == ServiceStatus.selesai)
         .toList();
 
