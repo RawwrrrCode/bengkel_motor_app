@@ -40,6 +40,61 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  Future<void> _showForgotPasswordDialog() async {
+    var email = _emailController.text.trim();
+    final sent = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Lupa Password?'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Masukkan email akunmu. Kami akan kirim link untuk membuat password baru.',
+            ),
+            const SizedBox(height: 14),
+            TextFormField(
+              initialValue: email,
+              onChanged: (v) => email = v,
+              keyboardType: TextInputType.emailAddress,
+              decoration: InputDecoration(
+                hintText: 'Email',
+                isDense: true,
+                contentPadding: const EdgeInsets.all(11),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(color: Color(0xFFE1E6EF)),
+                ),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Batal'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Kirim'),
+          ),
+        ],
+      ),
+    );
+    if (sent != true || !mounted) return;
+    final trimmed = email.trim();
+    if (trimmed.isEmpty) return;
+    final error = await context.read<AppProvider>().sendPasswordReset(
+          email: trimmed,
+        );
+    if (!mounted) return;
+    showDemoSnackbar(
+      context,
+      error ?? 'Link reset password sudah dikirim ke $trimmed.',
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -116,7 +171,19 @@ class _LoginScreenState extends State<LoginScreen> {
                         ? 'Password wajib diisi'
                         : null,
                   ),
-                  const SizedBox(height: 20),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: _showForgotPasswordDialog,
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.zero,
+                        minimumSize: Size.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      child: const Text('Lupa password?'),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
                   FilledButton(
                     onPressed: _submitting ? null : _submit,
                     style: FilledButton.styleFrom(

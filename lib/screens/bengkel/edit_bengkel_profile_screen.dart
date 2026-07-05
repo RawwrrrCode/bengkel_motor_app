@@ -3,25 +3,39 @@ import 'package:provider/provider.dart';
 
 import '../../providers/app_provider.dart';
 import '../../theme/app_colors.dart';
+import '../../utils/snackbar.dart';
 
-/// One-time onboarding shown right after an account picks the "Pemilik
-/// Bengkel" role but hasn't created their bengkel profile yet ([AuthGate]
-/// routes here whenever `activeRole == bengkel && myBengkelId == null`).
-class SetupBengkelScreen extends StatefulWidget {
-  const SetupBengkelScreen({super.key});
+/// Lets an existing bengkel owner edit the profile fields they filled in
+/// during onboarding ([SetupBengkelScreen]) — nama, alamat, jam, spesialis.
+class EditBengkelProfileScreen extends StatefulWidget {
+  const EditBengkelProfileScreen({super.key});
 
   @override
-  State<SetupBengkelScreen> createState() => _SetupBengkelScreenState();
+  State<EditBengkelProfileScreen> createState() =>
+      _EditBengkelProfileScreenState();
 }
 
-class _SetupBengkelScreenState extends State<SetupBengkelScreen> {
+class _EditBengkelProfileScreenState extends State<EditBengkelProfileScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _namaController = TextEditingController();
-  final _alamatController = TextEditingController();
-  final _jamController = TextEditingController(text: '08.00 – 17.00');
-  final _spesialisController = TextEditingController();
-  final _teleponController = TextEditingController();
+  late final TextEditingController _namaController;
+  late final TextEditingController _alamatController;
+  late final TextEditingController _jamController;
+  late final TextEditingController _spesialisController;
+  late final TextEditingController _teleponController;
   bool _submitting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final bengkel = context.read<AppProvider>().myBengkel;
+    _namaController = TextEditingController(text: bengkel?.nama ?? '');
+    _alamatController = TextEditingController(text: bengkel?.alamat ?? '');
+    _jamController = TextEditingController(text: bengkel?.jam ?? '');
+    _spesialisController = TextEditingController(
+      text: bengkel?.spesialis ?? '',
+    );
+    _teleponController = TextEditingController(text: bengkel?.telepon ?? '');
+  }
 
   @override
   void dispose() {
@@ -36,15 +50,17 @@ class _SetupBengkelScreenState extends State<SetupBengkelScreen> {
   Future<void> _submit() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
     setState(() => _submitting = true);
-    await context.read<AppProvider>().completeBengkelSetup(
-          nama: _namaController.text.trim(),
-          alamat: _alamatController.text.trim(),
-          jam: _jamController.text.trim(),
-          spesialis: _spesialisController.text.trim(),
-          telepon: _teleponController.text.trim(),
-        );
+    await context.read<AppProvider>().updateBengkelProfile(
+      nama: _namaController.text.trim(),
+      alamat: _alamatController.text.trim(),
+      jam: _jamController.text.trim(),
+      spesialis: _spesialisController.text.trim(),
+      telepon: _teleponController.text.trim(),
+    );
     if (!mounted) return;
     setState(() => _submitting = false);
+    showDemoSnackbar(context, 'Profil bengkel diperbarui');
+    Navigator.of(context).pop();
   }
 
   @override
@@ -52,11 +68,10 @@ class _SetupBengkelScreenState extends State<SetupBengkelScreen> {
     return Scaffold(
       backgroundColor: AppColors.pageBgBottom,
       appBar: AppBar(
-        title: const Text('Lengkapi Profil Bengkel'),
+        title: const Text('Edit Profil Bengkel'),
         backgroundColor: AppColors.pageBgBottom,
         elevation: 0,
         foregroundColor: AppColors.textPrimary,
-        automaticallyImplyLeading: false,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -66,15 +81,7 @@ class _SetupBengkelScreenState extends State<SetupBengkelScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Text(
-                  'Ceritakan tentang bengkelmu supaya pelanggan bisa menemukan dan booking servis.',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: AppColors.textSecondary,
-                    height: 1.4,
-                  ),
-                ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 8),
                 TextFormField(
                   controller: _namaController,
                   decoration: const InputDecoration(
@@ -114,7 +121,7 @@ class _SetupBengkelScreenState extends State<SetupBengkelScreen> {
                 TextFormField(
                   controller: _spesialisController,
                   decoration: const InputDecoration(
-                    labelText: 'Spesialisasi (mis. Spesialis Motor Matic)',
+                    labelText: 'Spesialisasi',
                     filled: true,
                     fillColor: Colors.white,
                   ),
@@ -155,7 +162,7 @@ class _SetupBengkelScreenState extends State<SetupBengkelScreen> {
                           ),
                         )
                       : const Text(
-                          'Selesai',
+                          'Simpan Perubahan',
                           style: TextStyle(
                             fontWeight: FontWeight.w800,
                             fontSize: 15,

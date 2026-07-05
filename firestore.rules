@@ -40,7 +40,9 @@ service cloud.firestore {
 
     match /serviceRequests/{requestId} {
       allow read: if isSignedIn() &&
-        (resource.data.customerUid == request.auth.uid || ownsBengkel(resource.data.bengkelId));
+        (resource.data.customerUid == request.auth.uid ||
+         ownsBengkel(resource.data.bengkelId) ||
+         (resource.data.status == 'selesai' && resource.data.rating > 0));
       allow create: if isSignedIn() && request.resource.data.customerUid == request.auth.uid;
       allow update: if isSignedIn() &&
         (resource.data.customerUid == request.auth.uid || ownsBengkel(resource.data.bengkelId));

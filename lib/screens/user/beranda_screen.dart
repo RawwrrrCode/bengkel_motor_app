@@ -29,14 +29,26 @@ class BerandaScreen extends StatelessWidget {
     }
     final topAlerts = alerts.take(3).toList();
 
+    // Status changes the bengkel made that the customer hasn't necessarily
+    // seen yet: confirmed/started/rejected, or completed-but-not-rated.
+    final serviceAlerts = app.myServices
+        .where(
+          (s) =>
+              s.status == ServiceStatus.dikonfirmasi ||
+              s.status == ServiceStatus.dikerjakan ||
+              s.status == ServiceStatus.batal ||
+              (s.status == ServiceStatus.selesai && s.rating == 0),
+        )
+        .toList();
+
     return Scaffold(
       appBar: TopBar(
         title: 'Halo, ${app.displayName}',
         subtitle: 'Ayo rawat motormu hari ini',
         showLogo: true,
         showBell: true,
-        hasNotification: alerts.isNotEmpty,
-        onBellTap: () => _showNotifications(context, alerts),
+        hasNotification: alerts.isNotEmpty || serviceAlerts.isNotEmpty,
+        onBellTap: () => _showNotifications(context, alerts, serviceAlerts),
         onLogout: () => context.read<AppProvider>().signOut(),
       ),
       body: ListView(
@@ -194,7 +206,9 @@ class BerandaScreen extends StatelessWidget {
   void _showNotifications(
     BuildContext context,
     List<MapEntry<Vehicle, MaintComputed>> alerts,
+    List<ServiceRequest> serviceAlerts,
   ) {
+    final app = context.read<AppProvider>();
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
@@ -226,7 +240,7 @@ class BerandaScreen extends StatelessWidget {
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      'Notifikasi Perawatan',
+                      'Notifikasi',
                       style: TextStyle(
                         fontWeight: FontWeight.w800,
                         fontSize: 16,
@@ -237,118 +251,239 @@ class BerandaScreen extends StatelessWidget {
                 ),
                 const Divider(height: 1, color: AppColors.divider),
                 Expanded(
-                  child: alerts.isEmpty
+                  child: (alerts.isEmpty && serviceAlerts.isEmpty)
                       ? const Center(
                           child: Text(
-                            'Tidak ada perawatan yang perlu dicek.',
+                            'Tidak ada notifikasi baru.',
                             style: TextStyle(color: AppColors.textSecondary),
                           ),
                         )
                       : ListView(
                           controller: scrollController,
                           padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-                          children: alerts.map((entry) {
-                            final vehicle = entry.key;
-                            final m = entry.value;
-                            return Material(
-                              color: Colors.transparent,
-                              child: InkWell(
-                                onTap: () {
-                                  Navigator.pop(sheetContext);
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => VehicleDetailScreen(
-                                        vehicleId: vehicle.id,
-                                      ),
-                                    ),
-                                  );
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 13,
-                                  ),
-                                  decoration: const BoxDecoration(
-                                    border: Border(
-                                      bottom: BorderSide(
-                                        color: AppColors.divider,
-                                      ),
-                                    ),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Container(
-                                        width: 40,
-                                        height: 40,
-                                        decoration: BoxDecoration(
-                                          color: AppColors.surfaceTint,
-                                          borderRadius: BorderRadius.circular(
-                                            12,
-                                          ),
-                                        ),
-                                        child: const Icon(
-                                          Icons.build_outlined,
-                                          color: AppColors.primary,
-                                          size: 20,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 12),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              m.nama,
-                                              style: const TextStyle(
-                                                fontWeight: FontWeight.w700,
-                                                fontSize: 13.5,
-                                                color: AppColors.textPrimary,
-                                              ),
-                                            ),
-                                            const SizedBox(height: 1),
-                                            Text(
-                                              '${vehicle.nama} · ${m.nextLabel}',
-                                              style: const TextStyle(
-                                                fontSize: 12,
-                                                color: AppColors.textSecondary,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 9,
-                                          vertical: 4,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: m.badge.bg,
-                                          borderRadius: BorderRadius.circular(
-                                            999,
-                                          ),
-                                        ),
-                                        child: Text(
-                                          m.badge.label,
-                                          style: TextStyle(
-                                            fontSize: 11,
-                                            fontWeight: FontWeight.w700,
-                                            color: m.badge.fg,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                          children: [
+                            if (serviceAlerts.isNotEmpty) ...[
+                              _sectionLabel('Update Pengajuan'),
+                              ...serviceAlerts.map(
+                                (s) => _serviceAlertTile(
+                                  context,
+                                  sheetContext,
+                                  app,
+                                  s,
                                 ),
                               ),
-                            );
-                          }).toList(),
+                              const SizedBox(height: 6),
+                            ],
+                            if (alerts.isNotEmpty) ...[
+                              _sectionLabel('Perawatan Perlu Dicek'),
+                              ...alerts.map(
+                                (entry) => _maintAlertTile(
+                                  context,
+                                  sheetContext,
+                                  entry,
+                                ),
+                              ),
+                            ],
+                          ],
                         ),
                 ),
               ],
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _sectionLabel(String label) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(0, 4, 0, 8),
+      child: Text(
+        label,
+        style: const TextStyle(
+          fontWeight: FontWeight.w700,
+          fontSize: 12,
+          color: AppColors.textSecondary,
+          letterSpacing: 0.2,
+        ),
+      ),
+    );
+  }
+
+  Widget _serviceAlertTile(
+    BuildContext context,
+    BuildContext sheetContext,
+    AppProvider app,
+    ServiceRequest s,
+  ) {
+    final badge = s.status.badge;
+    final needsRating = s.status == ServiceStatus.selesai && s.rating == 0;
+    final bengkelNama = app.bengkelById(s.bengkelId)?.nama ?? 'Bengkel';
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {
+          Navigator.pop(sheetContext);
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => HistoriDetailScreen(serviceId: s.id),
+            ),
+          );
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 13),
+          decoration: const BoxDecoration(
+            border: Border(bottom: BorderSide(color: AppColors.divider)),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: AppColors.primaryTint(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  needsRating ? Icons.star_border : Icons.build_outlined,
+                  color: AppColors.primary,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      needsRating ? 'Beri rating untuk servis' : s.jenis,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 13.5,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 1),
+                    Text(
+                      '$bengkelNama · ${s.vehLabel}',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 9,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: badge.bg,
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: Text(
+                  badge.label,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: badge.fg,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _maintAlertTile(
+    BuildContext context,
+    BuildContext sheetContext,
+    MapEntry<Vehicle, MaintComputed> entry,
+  ) {
+    final vehicle = entry.key;
+    final m = entry.value;
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {
+          Navigator.pop(sheetContext);
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => VehicleDetailScreen(vehicleId: vehicle.id),
+            ),
+          );
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 13),
+          decoration: const BoxDecoration(
+            border: Border(bottom: BorderSide(color: AppColors.divider)),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: AppColors.surfaceTint,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(
+                  Icons.build_outlined,
+                  color: AppColors.primary,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      m.nama,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 13.5,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 1),
+                    Text(
+                      '${vehicle.nama} · ${m.nextLabel}',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 9,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: m.badge.bg,
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: Text(
+                  m.badge.label,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: m.badge.fg,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

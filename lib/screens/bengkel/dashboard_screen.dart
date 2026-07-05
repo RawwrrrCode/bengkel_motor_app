@@ -18,7 +18,8 @@ class DashboardScreen extends StatelessWidget {
     final all = app.servicesForBengkel(app.myBengkelId!);
     final incoming = all.where((s) => s.status != ServiceStatus.selesai && s.status != ServiceStatus.batal).toList();
     final selesai = all.where((s) => s.status == ServiceStatus.selesai).toList();
-    final menunggu = incoming.where((s) => s.status == ServiceStatus.menunggu).length;
+    final pending = incoming.where((s) => s.status == ServiceStatus.menunggu).toList();
+    final menunggu = pending.length;
     final dikerjakan = incoming.where((s) => s.status == ServiceStatus.dikerjakan).length;
     final revenue = selesai.fold<int>(0, (a, s) => a + s.biaya);
 
@@ -36,7 +37,9 @@ class DashboardScreen extends StatelessWidget {
         title: 'Dashboard',
         subtitle: app.myBengkel?.nama ?? '',
         showLogo: true,
-        onLogout: () => context.read<AppProvider>().signOut(),
+        showBell: true,
+        hasNotification: pending.isNotEmpty,
+        onBellTap: () => _showNotifications(context, pending),
       ),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
@@ -147,6 +150,146 @@ class DashboardScreen extends StatelessWidget {
               );
             }),
         ],
+      ),
+    );
+  }
+
+  void _showNotifications(BuildContext context, List<ServiceRequest> pending) {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) => DraggableScrollableSheet(
+        initialChildSize: 0.6,
+        minChildSize: 0.3,
+        maxChildSize: 0.85,
+        expand: false,
+        builder: (context, scrollController) {
+          return Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            child: Column(
+              children: [
+                const SizedBox(height: 10),
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE1E6EF),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                ),
+                const Padding(
+                  padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Pengajuan Menunggu Konfirmasi',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 16,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                  ),
+                ),
+                const Divider(height: 1, color: AppColors.divider),
+                Expanded(
+                  child: pending.isEmpty
+                      ? const Center(
+                          child: Text(
+                            'Tidak ada pengajuan baru yang menunggu.',
+                            style: TextStyle(color: AppColors.textSecondary),
+                          ),
+                        )
+                      : ListView(
+                          controller: scrollController,
+                          padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+                          children: pending.map((p) {
+                            return Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                onTap: () {
+                                  Navigator.pop(sheetContext);
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) =>
+                                          PengajuanDetailScreen(serviceId: p.id),
+                                    ),
+                                  );
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(vertical: 13),
+                                  decoration: const BoxDecoration(
+                                    border: Border(
+                                      bottom: BorderSide(color: AppColors.divider),
+                                    ),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        width: 40,
+                                        height: 40,
+                                        decoration: BoxDecoration(
+                                          color: AppColors.primaryTint(0.1),
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                        alignment: Alignment.center,
+                                        child: Text(
+                                          p.customer.isNotEmpty ? p.customer[0] : '?',
+                                          style: const TextStyle(
+                                            color: AppColors.primary,
+                                            fontWeight: FontWeight.w800,
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              p.customer,
+                                              style: const TextStyle(
+                                                fontWeight: FontWeight.w700,
+                                                fontSize: 13.5,
+                                                color: AppColors.textPrimary,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 1),
+                                            Text(
+                                              '${p.jenis} · ${p.vehLabel}',
+                                              style: const TextStyle(
+                                                fontSize: 12,
+                                                color: AppColors.textSecondary,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      Text(
+                                        '${AppFormatters.fmtDate(p.tanggal)} · ${p.jam}',
+                                        style: const TextStyle(
+                                          fontSize: 11.5,
+                                          color: AppColors.textMuted,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../widgets/tab_shell.dart';
 import 'dashboard_screen.dart';
 import 'pengajuan_list_screen.dart';
-import 'riwayat_list_screen.dart';
+import 'profil_bengkel_screen.dart';
 import 'sparepart_screen.dart';
 
 class BengkelShell extends StatefulWidget {
@@ -45,9 +45,9 @@ class _BengkelShellState extends State<BengkelShell> {
             rootBuilder: (_) => const SparepartScreen(),
           ),
           TabItemConfig(
-            icon: Icons.receipt_long_outlined,
-            label: 'Riwayat',
-            rootBuilder: (_) => const RiwayatListScreen(),
+            icon: Icons.person_outline,
+            label: 'Profil',
+            rootBuilder: (_) => const ProfilBengkelScreen(),
           ),
         ],
       ),

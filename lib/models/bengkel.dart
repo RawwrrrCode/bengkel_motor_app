@@ -10,6 +10,7 @@ class Bengkel {
   final bool buka;
   final String spesialis;
   final bool verified;
+  final String telepon;
 
   const Bengkel({
     required this.id,
@@ -23,6 +24,7 @@ class Bengkel {
     required this.buka,
     required this.spesialis,
     required this.verified,
+    this.telepon = '',
   });
 
   Bengkel copyWith({double? rating, int? ulasan}) => Bengkel(
@@ -37,6 +39,7 @@ class Bengkel {
     buka: buka,
     spesialis: spesialis,
     verified: verified,
+    telepon: telepon,
   );
 
   Map<String, dynamic> toJson() => {
@@ -50,6 +53,7 @@ class Bengkel {
     'buka': buka,
     'spesialis': spesialis,
     'verified': verified,
+    'telepon': telepon,
   };
 
   factory Bengkel.fromJson(String id, Map<String, dynamic> json) => Bengkel(
@@ -64,5 +68,6 @@ class Bengkel {
     buka: json['buka'] as bool,
     spesialis: json['spesialis'] as String,
     verified: json['verified'] as bool,
+    telepon: json['telepon'] as String? ?? '',
   );
 }

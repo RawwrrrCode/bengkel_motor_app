@@ -239,6 +239,17 @@ class AppProvider extends ChangeNotifier {
 
   Future<void> signOut() => _auth.signOut();
 
+  /// Sends a password-reset email. Returns null on success, or a message to
+  /// show the user on failure.
+  Future<String?> sendPasswordReset({required String email}) async {
+    try {
+      await _auth.sendPasswordResetEmail(email: email);
+      return null;
+    } on FirebaseAuthException catch (e) {
+      return _authErrorMessage(e);
+    }
+  }
+
   String _authErrorMessage(FirebaseAuthException e) {
     switch (e.code) {
       case 'email-already-in-use':
@@ -263,6 +274,7 @@ class AppProvider extends ChangeNotifier {
     required String alamat,
     required String jam,
     required String spesialis,
+    String telepon = '',
   }) async {
     final uid = _firebaseUser?.uid;
     if (uid == null) return;
@@ -283,6 +295,7 @@ class AppProvider extends ChangeNotifier {
         buka: true,
         spesialis: spesialis,
         verified: false,
+        telepon: telepon,
       ).toJson(),
     );
     final batch = _db.batch();
@@ -296,6 +309,25 @@ class AppProvider extends ChangeNotifier {
       'bengkelId': bengkelRef.id,
     });
     await batch.commit();
+  }
+
+  /// Lets an existing bengkel owner edit their own profile fields.
+  Future<void> updateBengkelProfile({
+    required String nama,
+    required String alamat,
+    required String jam,
+    required String spesialis,
+    required String telepon,
+  }) async {
+    final bengkelId = myBengkelId;
+    if (bengkelId == null) return;
+    await _db.collection('bengkels').doc(bengkelId).update({
+      'nama': nama,
+      'alamat': alamat,
+      'jam': jam,
+      'spesialis': spesialis,
+      'telepon': telepon,
+    });
   }
 
   // ---- Data getters ----
@@ -375,6 +407,32 @@ class AppProvider extends ChangeNotifier {
         .collection('spareparts')
         .get();
     return snap.docs.map((d) => Sparepart.fromJson(d.id, d.data())).toList();
+  }
+
+  /// One-shot read of a bengkel's public reviews (completed + rated service
+  /// requests), for browsing on `BengkelDetailScreen`. Newest first.
+  Future<List<ServiceRequest>> fetchReviewsFor(String bengkelId) async {
+    final snap = await _db
+        .collection('serviceRequests')
+        .where('bengkelId', isEqualTo: bengkelId)
+        .where('status', isEqualTo: 'selesai')
+        .where('rating', isGreaterThan: 0)
+        .get();
+    final reviews = snap.docs
+        .map((d) => ServiceRequest.fromJson(d.id, d.data()))
+        .toList();
+    reviews.sort((a, b) => b.tanggal.compareTo(a.tanggal));
+    return reviews;
+  }
+
+  /// Same as [fetchSparepartsFor] but for the jasa (service) catalog.
+  Future<List<Jasa>> fetchJasaFor(String bengkelId) async {
+    final snap = await _db
+        .collection('bengkels')
+        .doc(bengkelId)
+        .collection('jasa')
+        .get();
+    return snap.docs.map((d) => Jasa.fromJson(d.id, d.data())).toList();
   }
 
   /// Whether [bengkelId] already has an active (non-cancelled) booking at
