@@ -5,7 +5,6 @@ import '../../models/service_request.dart';
 import '../../providers/app_provider.dart';
 import '../../theme/app_colors.dart';
 import '../../utils/formatters.dart';
-import '../../utils/snackbar.dart';
 import '../../widgets/status_badge.dart';
 import '../../widgets/top_bar.dart';
 import 'pengajuan_detail_screen.dart';
@@ -37,10 +36,6 @@ class DashboardScreen extends StatelessWidget {
         title: 'Dashboard',
         subtitle: app.myBengkel?.nama ?? '',
         showLogo: true,
-        onSwitchRole: () {
-          context.read<AppProvider>().setRole(UserRole.user);
-          showDemoSnackbar(context, 'Berpindah ke Tampilan User');
-        },
         onLogout: () => context.read<AppProvider>().signOut(),
       ),
       body: ListView(

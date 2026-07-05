@@ -5,7 +5,6 @@ import '../../models/service_request.dart';
 import '../../models/vehicle.dart';
 import '../../providers/app_provider.dart';
 import '../../theme/app_colors.dart';
-import '../../utils/snackbar.dart';
 import '../../widgets/tab_shell.dart';
 import '../../widgets/top_bar.dart';
 import '../../widgets/vehicle_card.dart';
@@ -38,10 +37,6 @@ class BerandaScreen extends StatelessWidget {
         showBell: true,
         hasNotification: alerts.isNotEmpty,
         onBellTap: () => _showNotifications(context, alerts),
-        onSwitchRole: () {
-          context.read<AppProvider>().setRole(UserRole.bengkel);
-          showDemoSnackbar(context, 'Berpindah ke Tampilan Bengkel');
-        },
         onLogout: () => context.read<AppProvider>().signOut(),
       ),
       body: ListView(

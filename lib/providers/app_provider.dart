@@ -256,13 +256,6 @@ class AppProvider extends ChangeNotifier {
     }
   }
 
-  /// Used by the small "Ganti Peran" quick-switch affordance once inside the app.
-  Future<void> setRole(UserRole role) async {
-    final uid = _firebaseUser?.uid;
-    if (uid == null) return;
-    await _db.collection('users').doc(uid).update({'activeRole': role.name});
-  }
-
   /// Onboarding for a first-time bengkel owner: creates their `bengkels` doc
   /// and seeds a starter sparepart/jasa catalog so they don't start empty.
   Future<void> completeBengkelSetup({
