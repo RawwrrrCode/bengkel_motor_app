@@ -25,7 +25,9 @@ class PengajuanDetailScreen extends StatelessWidget {
     }
     final badge = svc.status.badge;
     final canReject = svc.status == ServiceStatus.menunggu;
-    final canAdvance = svc.status != ServiceStatus.selesai && svc.status != ServiceStatus.batal;
+    final canAdvance =
+        svc.status != ServiceStatus.selesai &&
+        svc.status != ServiceStatus.batal;
 
     return Scaffold(
       appBar: TopBar(title: svc.id, subtitle: svc.jenis, showBack: true),
@@ -55,24 +57,43 @@ class PengajuanDetailScreen extends StatelessWidget {
                               borderRadius: BorderRadius.circular(13),
                             ),
                             alignment: Alignment.center,
-                            child: Text(svc.customer.isNotEmpty ? svc.customer[0] : '?',
-                                style: const TextStyle(
-                                    color: AppColors.primary, fontWeight: FontWeight.w800, fontSize: 17)),
+                            child: Text(
+                              svc.customer.isNotEmpty ? svc.customer[0] : '?',
+                              style: const TextStyle(
+                                color: AppColors.primary,
+                                fontWeight: FontWeight.w800,
+                                fontSize: 17,
+                              ),
+                            ),
                           ),
                           const SizedBox(width: 11),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(svc.customer,
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.w800, fontSize: 15.5, color: AppColors.textPrimary)),
-                              Text(svc.vehLabel,
-                                  style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                              Text(
+                                svc.customer,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w800,
+                                  fontSize: 15.5,
+                                  color: AppColors.textPrimary,
+                                ),
+                              ),
+                              Text(
+                                svc.vehLabel,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
                             ],
                           ),
                         ],
                       ),
-                      StatusBadgeChip(label: badge.label, bg: badge.bg, fg: badge.fg),
+                      StatusBadgeChip(
+                        label: badge.label,
+                        bg: badge.bg,
+                        fg: badge.fg,
+                      ),
                     ],
                   ),
                 ),
@@ -87,17 +108,34 @@ class PengajuanDetailScreen extends StatelessWidget {
                   child: Column(
                     children: [
                       _row('Layanan', svc.jenis),
-                      _row('Jadwal', '${AppFormatters.fmtDate(svc.tanggal)} · ${svc.jam}'),
+                      _row(
+                        'Jadwal',
+                        '${AppFormatters.fmtDate(svc.tanggal)} · ${svc.jam}',
+                      ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 11,
+                        ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text('Keluhan',
-                                style: TextStyle(fontSize: 13, color: AppColors.textSecondary)),
+                            const Text(
+                              'Keluhan',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
                             const SizedBox(height: 4),
-                            Text(svc.keluhan,
-                                style: const TextStyle(fontSize: 13, color: AppColors.textPrimary, height: 1.4)),
+                            Text(
+                              svc.keluhan,
+                              style: const TextStyle(
+                                fontSize: 13,
+                                color: AppColors.textPrimary,
+                                height: 1.4,
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -115,8 +153,14 @@ class PengajuanDetailScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Status Pengerjaan',
-                          style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14, color: AppColors.textPrimary)),
+                      const Text(
+                        'Status Pengerjaan',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 14,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
                       const SizedBox(height: 14),
                       StatusTimeline(status: svc.status),
                     ],
@@ -130,7 +174,9 @@ class PengajuanDetailScreen extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
               decoration: const BoxDecoration(
                 color: Colors.white,
-                border: Border(top: BorderSide(color: AppColors.cardBorderLight)),
+                border: Border(
+                  top: BorderSide(color: AppColors.cardBorderLight),
+                ),
               ),
               child: Row(
                 children: [
@@ -140,10 +186,21 @@ class PengajuanDetailScreen extends StatelessWidget {
                       style: FilledButton.styleFrom(
                         backgroundColor: AppColors.batalBg,
                         foregroundColor: AppColors.batalFg,
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(13)),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 14,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(13),
+                        ),
                       ),
-                      child: const Text('Tolak', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
+                      child: const Text(
+                        'Tolak',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 14,
+                        ),
+                      ),
                     ),
                   if (canReject) const SizedBox(width: 12),
                   Expanded(
@@ -153,20 +210,32 @@ class PengajuanDetailScreen extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (_) => CompleteServiceScreen(serviceId: svc.id)),
+                              builder: (_) =>
+                                  CompleteServiceScreen(serviceId: svc.id),
+                            ),
                           );
                         } else {
                           context.read<AppProvider>().advanceStatus(svc.id);
-                          showDemoSnackbar(context, 'Status pesanan diperbarui');
+                          showDemoSnackbar(
+                            context,
+                            'Status pesanan diperbarui',
+                          );
                         }
                       },
                       style: FilledButton.styleFrom(
                         backgroundColor: AppColors.primary,
                         padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(13)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(13),
+                        ),
                       ),
-                      child: Text(svc.status.advanceActionLabel,
-                          style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14.5)),
+                      child: Text(
+                        svc.status.advanceActionLabel,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 14.5,
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -178,25 +247,52 @@ class PengajuanDetailScreen extends StatelessWidget {
   }
 
   Future<void> _confirmReject(BuildContext context, ServiceRequest svc) async {
+    var alasan = '';
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Tolak Pengajuan?'),
-        content: Text(
-            'Pengajuan ${svc.jenis} dari ${svc.customer} akan ditolak dan tidak bisa diproses lagi.'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Pengajuan ${svc.jenis} dari ${svc.customer} akan ditolak dan tidak bisa diproses lagi.',
+            ),
+            const SizedBox(height: 14),
+            TextField(
+              onChanged: (v) => alasan = v,
+              maxLines: 2,
+              decoration: InputDecoration(
+                hintText: 'Alasan penolakan (opsional)',
+                isDense: true,
+                contentPadding: const EdgeInsets.all(11),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(color: Color(0xFFE1E6EF)),
+                ),
+              ),
+            ),
+          ],
+        ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(context, false), child: const Text('Batal')),
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Batal'),
+          ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Tolak', style: TextStyle(color: AppColors.batalFg)),
+            child: const Text(
+              'Tolak',
+              style: TextStyle(color: AppColors.batalFg),
+            ),
           ),
         ],
       ),
     );
 
     if (confirmed == true && context.mounted) {
-      context.read<AppProvider>().rejectRequest(svc.id);
+      context.read<AppProvider>().rejectRequest(svc.id, alasan: alasan.trim());
       showDemoSnackbar(context, 'Pengajuan ditolak');
     }
   }
@@ -204,13 +300,27 @@ class PengajuanDetailScreen extends StatelessWidget {
   Widget _row(String label, String value) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: AppColors.divider))),
+      decoration: const BoxDecoration(
+        border: Border(bottom: BorderSide(color: AppColors.divider)),
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: const TextStyle(fontSize: 13, color: AppColors.textSecondary)),
-          Text(value,
-              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 13,
+              color: AppColors.textSecondary,
+            ),
+          ),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textPrimary,
+            ),
+          ),
         ],
       ),
     );

@@ -24,355 +24,477 @@ class HistoriDetailScreen extends StatelessWidget {
     }
     final bengkel = app.bengkelById(svc.bengkelId);
     final badge = svc.status.badge;
+    final canCancel =
+        svc.mine &&
+        (svc.status == ServiceStatus.menunggu ||
+            svc.status == ServiceStatus.dikonfirmasi);
 
     return Scaffold(
       appBar: TopBar(title: svc.id, subtitle: svc.jenis, showBack: true),
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+      body: Column(
         children: [
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border.all(color: AppColors.cardBorder),
-              borderRadius: BorderRadius.circular(18),
-            ),
-            padding: const EdgeInsets.all(18),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        svc.jenis,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w800,
-                          fontSize: 16,
-                          color: AppColors.textPrimary,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        svc.vehLabel,
-                        style: const TextStyle(
-                          fontSize: 12.5,
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                StatusBadgeChip(label: badge.label, bg: badge.bg, fg: badge.fg),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border.all(color: AppColors.cardBorder),
-              borderRadius: BorderRadius.circular(18),
-            ),
-            padding: const EdgeInsets.all(18),
-            child: StatusTimeline(status: svc.status),
-          ),
-          const SizedBox(height: 16),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border.all(color: AppColors.cardBorder),
-              borderRadius: BorderRadius.circular(18),
-            ),
-            clipBehavior: Clip.antiAlias,
-            child: Column(
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
               children: [
                 Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 13,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(color: AppColors.cardBorder),
+                    borderRadius: BorderRadius.circular(18),
                   ),
-                  decoration: const BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(color: AppColors.divider),
-                    ),
-                  ),
-                  child: const Text(
-                    'Informasi Service',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w800,
-                      fontSize: 14,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                ),
-                _infoRow('Bengkel', bengkel?.nama ?? '-'),
-                _infoRow(
-                  'Jadwal',
-                  '${AppFormatters.fmtDate(svc.tanggal)} · ${svc.jam}',
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 11,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  padding: const EdgeInsets.all(18),
+                  child: Row(
                     children: [
-                      const Text(
-                        'Keluhan',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: AppColors.textSecondary,
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              svc.jenis,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w800,
+                                fontSize: 16,
+                                color: AppColors.textPrimary,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              svc.vehLabel,
+                              style: const TextStyle(
+                                fontSize: 12.5,
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        svc.keluhan,
-                        style: const TextStyle(
-                          fontSize: 13,
-                          color: AppColors.textPrimary,
-                          height: 1.4,
-                        ),
+                      StatusBadgeChip(
+                        label: badge.label,
+                        bg: badge.bg,
+                        fg: badge.fg,
                       ),
                     ],
                   ),
                 ),
-              ],
-            ),
-          ),
-          if (svc.items.isNotEmpty) ...[
-            const SizedBox(height: 16),
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(color: AppColors.cardBorder),
-                borderRadius: BorderRadius.circular(18),
-              ),
-              clipBehavior: Clip.antiAlias,
-              child: Column(
-                children: [
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 13,
-                    ),
-                    decoration: const BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(color: AppColors.divider),
-                      ),
-                    ),
-                    child: const Text(
-                      'Rincian Biaya',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w800,
-                        fontSize: 14,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
+                const SizedBox(height: 16),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(color: AppColors.cardBorder),
+                    borderRadius: BorderRadius.circular(18),
                   ),
-                  ...svc.items.map(
-                    (i) => _infoRow(
-                      '${i.qty}× ${i.nama}',
-                      AppFormatters.fmtRp(i.subtotal),
-                    ),
+                  padding: const EdgeInsets.all(18),
+                  child: StatusTimeline(status: svc.status),
+                ),
+                const SizedBox(height: 16),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(color: AppColors.cardBorder),
+                    borderRadius: BorderRadius.circular(18),
                   ),
-                  Container(
-                    width: double.infinity,
-                    color: AppColors.surfaceTint,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 14,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'Total',
+                  clipBehavior: Clip.antiAlias,
+                  child: Column(
+                    children: [
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 13,
+                        ),
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(color: AppColors.divider),
+                          ),
+                        ),
+                        child: const Text(
+                          'Informasi Service',
                           style: TextStyle(
-                            fontSize: 14,
                             fontWeight: FontWeight.w800,
+                            fontSize: 14,
                             color: AppColors.textPrimary,
                           ),
                         ),
-                        Text(
-                          AppFormatters.fmtRp(svc.biaya),
-                          style: const TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w800,
-                            color: AppColors.primary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-          if (svc.saran.isNotEmpty) ...[
-            const SizedBox(height: 16),
-            Container(
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [AppColors.saranBg1, AppColors.saranBg2],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                border: Border.all(color: AppColors.saranBorder),
-                borderRadius: BorderRadius.circular(18),
-              ),
-              padding: const EdgeInsets.all(17),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        width: 34,
-                        height: 34,
-                        decoration: BoxDecoration(
-                          color: AppColors.saranIconBg,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: const Icon(
-                          Icons.lightbulb_outline,
-                          size: 19,
-                          color: AppColors.saranIconFg,
-                        ),
                       ),
-                      const SizedBox(width: 9),
-                      const Text(
-                        'Saran dari Bengkel',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w800,
-                          fontSize: 14.5,
-                          color: AppColors.saranTitle,
+                      _infoRow('Bengkel', bengkel?.nama ?? '-'),
+                      _infoRow(
+                        'Jadwal',
+                        '${AppFormatters.fmtDate(svc.tanggal)} · ${svc.jam}',
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 11,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Keluhan',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              svc.keluhan,
+                              style: const TextStyle(
+                                fontSize: 13,
+                                color: AppColors.textPrimary,
+                                height: 1.4,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 11),
-                  Text(
-                    svc.saran,
-                    style: const TextStyle(
-                      fontSize: 13.5,
-                      color: AppColors.saranText,
-                      height: 1.6,
-                    ),
-                  ),
-                  const SizedBox(height: 13),
+                ),
+                if (svc.items.isNotEmpty) ...[
+                  const SizedBox(height: 16),
                   Container(
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      border: Border.all(color: const Color(0xFFFADFB2)),
-                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: AppColors.cardBorder),
+                      borderRadius: BorderRadius.circular(18),
                     ),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 11,
-                      vertical: 7,
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
+                    clipBehavior: Clip.antiAlias,
+                    child: Column(
                       children: [
-                        const Icon(
-                          Icons.event_outlined,
-                          size: 15,
-                          color: AppColors.saranIconFg,
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 13,
+                          ),
+                          decoration: const BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(color: AppColors.divider),
+                            ),
+                          ),
+                          child: const Text(
+                            'Rincian Biaya',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w800,
+                              fontSize: 14,
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
                         ),
-                        const SizedBox(width: 6),
-                        Text(
-                          'Rekomendasi tindak lanjut: ${svc.saranBulan}',
-                          style: const TextStyle(
-                            fontSize: 12.5,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.saranTitle,
+                        ...svc.items.map(
+                          (i) => _infoRow(
+                            '${i.qty}× ${i.nama}',
+                            AppFormatters.fmtRp(i.subtotal),
+                          ),
+                        ),
+                        Container(
+                          width: double.infinity,
+                          color: AppColors.surfaceTint,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 14,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                'Total',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w800,
+                                  color: AppColors.textPrimary,
+                                ),
+                              ),
+                              Text(
+                                AppFormatters.fmtRp(svc.biaya),
+                                style: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w800,
+                                  color: AppColors.primary,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
                     ),
                   ),
                 ],
-              ),
+                if (svc.saran.isNotEmpty) ...[
+                  const SizedBox(height: 16),
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [AppColors.saranBg1, AppColors.saranBg2],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      border: Border.all(color: AppColors.saranBorder),
+                      borderRadius: BorderRadius.circular(18),
+                    ),
+                    padding: const EdgeInsets.all(17),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              width: 34,
+                              height: 34,
+                              decoration: BoxDecoration(
+                                color: AppColors.saranIconBg,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: const Icon(
+                                Icons.lightbulb_outline,
+                                size: 19,
+                                color: AppColors.saranIconFg,
+                              ),
+                            ),
+                            const SizedBox(width: 9),
+                            const Text(
+                              'Saran dari Bengkel',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w800,
+                                fontSize: 14.5,
+                                color: AppColors.saranTitle,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 11),
+                        Text(
+                          svc.saran,
+                          style: const TextStyle(
+                            fontSize: 13.5,
+                            color: AppColors.saranText,
+                            height: 1.6,
+                          ),
+                        ),
+                        const SizedBox(height: 13),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border.all(color: const Color(0xFFFADFB2)),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 11,
+                            vertical: 7,
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Icons.event_outlined,
+                                size: 15,
+                                color: AppColors.saranIconFg,
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                'Rekomendasi tindak lanjut: ${svc.saranBulan}',
+                                style: const TextStyle(
+                                  fontSize: 12.5,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.saranTitle,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+                if (svc.status == ServiceStatus.batal &&
+                    svc.alasanBatal.isNotEmpty) ...[
+                  const SizedBox(height: 16),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: AppColors.batalBg,
+                      borderRadius: BorderRadius.circular(18),
+                    ),
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Icon(
+                          Icons.info_outline,
+                          size: 18,
+                          color: AppColors.batalFg,
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Pengajuan Dibatalkan',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w800,
+                                  fontSize: 13.5,
+                                  color: AppColors.batalFg,
+                                ),
+                              ),
+                              const SizedBox(height: 3),
+                              Text(
+                                svc.alasanBatal,
+                                style: const TextStyle(
+                                  fontSize: 12.5,
+                                  color: AppColors.batalFg,
+                                  height: 1.4,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+                if (svc.status == ServiceStatus.selesai && svc.mine) ...[
+                  const SizedBox(height: 16),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(color: AppColors.cardBorder),
+                      borderRadius: BorderRadius.circular(18),
+                    ),
+                    padding: const EdgeInsets.all(18),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          svc.rating == 0
+                              ? 'Beri Rating untuk Bengkel'
+                              : 'Rating Kamu',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w800,
+                            fontSize: 14.5,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: List.generate(5, (i) {
+                            final starValue = i + 1;
+                            final filled =
+                                svc.rating > 0 && starValue <= svc.rating;
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 6),
+                              child: svc.rating == 0
+                                  ? InkWell(
+                                      borderRadius: BorderRadius.circular(20),
+                                      onTap: () {
+                                        context.read<AppProvider>().rateService(
+                                          svc.id,
+                                          starValue,
+                                        );
+                                        showDemoSnackbar(
+                                          context,
+                                          'Terima kasih atas penilaianmu!',
+                                        );
+                                      },
+                                      child: const Padding(
+                                        padding: EdgeInsets.all(2),
+                                        child: Icon(
+                                          Icons.star_border,
+                                          size: 28,
+                                          color: AppColors.ratingStar,
+                                        ),
+                                      ),
+                                    )
+                                  : Icon(
+                                      filled ? Icons.star : Icons.star_border,
+                                      size: 26,
+                                      color: AppColors.ratingStar,
+                                    ),
+                            );
+                          }),
+                        ),
+                        if (svc.rating > 0) ...[
+                          const SizedBox(height: 8),
+                          Text(
+                            'Terima kasih telah memberi rating ${svc.rating}/5 untuk servis ini.',
+                            style: const TextStyle(
+                              fontSize: 12.5,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ],
+              ],
             ),
-          ],
-          if (svc.status == ServiceStatus.selesai && svc.mine) ...[
-            const SizedBox(height: 16),
+          ),
+          if (canCancel)
             Container(
-              decoration: BoxDecoration(
+              padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+              decoration: const BoxDecoration(
                 color: Colors.white,
-                border: Border.all(color: AppColors.cardBorder),
-                borderRadius: BorderRadius.circular(18),
+                border: Border(
+                  top: BorderSide(color: AppColors.cardBorderLight),
+                ),
               ),
-              padding: const EdgeInsets.all(18),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    svc.rating == 0
-                        ? 'Beri Rating untuk Bengkel'
-                        : 'Rating Kamu',
-                    style: const TextStyle(
+              child: SizedBox(
+                width: double.infinity,
+                child: FilledButton(
+                  onPressed: () => _confirmCancel(context, svc),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: AppColors.batalBg,
+                    foregroundColor: AppColors.batalFg,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(13),
+                    ),
+                  ),
+                  child: const Text(
+                    'Batalkan Pengajuan',
+                    style: TextStyle(
                       fontWeight: FontWeight.w800,
                       fontSize: 14.5,
-                      color: AppColors.textPrimary,
                     ),
                   ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: List.generate(5, (i) {
-                      final starValue = i + 1;
-                      final filled = svc.rating > 0 && starValue <= svc.rating;
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 6),
-                        child: svc.rating == 0
-                            ? InkWell(
-                                borderRadius: BorderRadius.circular(20),
-                                onTap: () {
-                                  context.read<AppProvider>().rateService(
-                                    svc.id,
-                                    starValue,
-                                  );
-                                  showDemoSnackbar(
-                                    context,
-                                    'Terima kasih atas penilaianmu!',
-                                  );
-                                },
-                                child: const Padding(
-                                  padding: EdgeInsets.all(2),
-                                  child: Icon(
-                                    Icons.star_border,
-                                    size: 28,
-                                    color: AppColors.ratingStar,
-                                  ),
-                                ),
-                              )
-                            : Icon(
-                                filled ? Icons.star : Icons.star_border,
-                                size: 26,
-                                color: AppColors.ratingStar,
-                              ),
-                      );
-                    }),
-                  ),
-                  if (svc.rating > 0) ...[
-                    const SizedBox(height: 8),
-                    Text(
-                      'Terima kasih telah memberi rating ${svc.rating}/5 untuk servis ini.',
-                      style: const TextStyle(
-                        fontSize: 12.5,
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                  ],
-                ],
+                ),
               ),
             ),
-          ],
         ],
       ),
     );
+  }
+
+  Future<void> _confirmCancel(BuildContext context, ServiceRequest svc) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Batalkan Pengajuan?'),
+        content: Text(
+          'Pengajuan ${svc.jenis} ke bengkel ini akan dibatalkan dan tidak bisa diproses lagi.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Tidak'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text(
+              'Batalkan',
+              style: TextStyle(color: AppColors.batalFg),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true && context.mounted) {
+      context.read<AppProvider>().cancelRequest(svc.id);
+      showDemoSnackbar(context, 'Pengajuan dibatalkan');
+      Navigator.of(context).pop();
+    }
   }
 
   Widget _infoRow(String label, String value) {

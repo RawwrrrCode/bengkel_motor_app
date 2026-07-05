@@ -8,6 +8,8 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
   final bool showBack;
   final bool showLogo;
   final bool showBell;
+  final bool hasNotification;
+  final VoidCallback? onBellTap;
   final VoidCallback? onPlus;
   final VoidCallback? onSwitchRole;
 
@@ -18,6 +20,8 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
     this.showBack = false,
     this.showLogo = false,
     this.showBell = false,
+    this.hasNotification = false,
+    this.onBellTap,
     this.onPlus,
     this.onSwitchRole,
   });
@@ -46,9 +50,14 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
               alignment: Alignment.center,
-              child: const Text('B',
-                  style: TextStyle(
-                      color: Colors.white, fontWeight: FontWeight.w800, fontSize: 17)),
+              child: const Text(
+                'B',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w800,
+                  fontSize: 17,
+                ),
+              ),
             ),
           if (showBack || showLogo) const SizedBox(width: 12),
           Expanded(
@@ -59,15 +68,19 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
                 Text(
                   title,
                   style: const TextStyle(
-                      fontWeight: FontWeight.w800,
-                      fontSize: 16.5,
-                      color: AppColors.textPrimary),
+                    fontWeight: FontWeight.w800,
+                    fontSize: 16.5,
+                    color: AppColors.textPrimary,
+                  ),
                   overflow: TextOverflow.ellipsis,
                 ),
                 if (subtitle != null && subtitle!.isNotEmpty)
                   Text(
                     subtitle!,
-                    style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: AppColors.textSecondary,
+                    ),
                     overflow: TextOverflow.ellipsis,
                   ),
               ],
@@ -77,20 +90,24 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
             Stack(
               clipBehavior: Clip.none,
               children: [
-                _iconButton(icon: Icons.notifications_none, onTap: () {}),
-                Positioned(
-                  top: 8,
-                  right: 9,
-                  child: Container(
-                    width: 7,
-                    height: 7,
-                    decoration: const BoxDecoration(
-                        color: Color(0xFFE8890C), shape: BoxShape.circle),
+                _iconButton(icon: Icons.notifications_none, onTap: onBellTap),
+                if (hasNotification)
+                  Positioned(
+                    top: 8,
+                    right: 9,
+                    child: Container(
+                      width: 7,
+                      height: 7,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFE8890C),
+                        shape: BoxShape.circle,
+                      ),
+                    ),
                   ),
-                ),
               ],
             ),
-          if (onPlus != null) _iconButton(icon: Icons.add, onTap: onPlus, filled: true),
+          if (onPlus != null)
+            _iconButton(icon: Icons.add, onTap: onPlus, filled: true),
           if (onSwitchRole != null)
             Padding(
               padding: const EdgeInsets.only(left: 6),
@@ -101,7 +118,11 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 
-  Widget _iconButton({required IconData icon, VoidCallback? onTap, bool filled = false}) {
+  Widget _iconButton({
+    required IconData icon,
+    VoidCallback? onTap,
+    bool filled = false,
+  }) {
     return Material(
       color: filled ? AppColors.primary : const Color(0xFFF1F4F9),
       borderRadius: BorderRadius.circular(12),
@@ -111,7 +132,11 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
         child: SizedBox(
           width: 38,
           height: 38,
-          child: Icon(icon, size: 20, color: filled ? Colors.white : AppColors.textPrimary),
+          child: Icon(
+            icon,
+            size: 20,
+            color: filled ? Colors.white : AppColors.textPrimary,
+          ),
         ),
       ),
     );

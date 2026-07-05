@@ -20,15 +20,18 @@ class _SparepartScreenState extends State<SparepartScreen> {
   bool _showForm = false;
   String? _editingId;
   String _tab = 'sparepart';
+  String _query = '';
   final _namaController = TextEditingController();
   final _hargaController = TextEditingController();
   final _stokController = TextEditingController();
+  final _searchController = TextEditingController();
 
   @override
   void dispose() {
     _namaController.dispose();
     _hargaController.dispose();
     _stokController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -81,6 +84,8 @@ class _SparepartScreenState extends State<SparepartScreen> {
       _tab = tab;
       _showForm = false;
       _editingId = null;
+      _query = '';
+      _searchController.clear();
     });
   }
 
@@ -156,9 +161,17 @@ class _SparepartScreenState extends State<SparepartScreen> {
   @override
   Widget build(BuildContext context) {
     final app = context.watch<AppProvider>();
-    final spareparts = app.spareparts;
-    final jasaList = app.jasaList;
+    final allSpareparts = app.spareparts;
+    final allJasa = app.jasaList;
     final isSparepart = _tab == 'sparepart';
+    final catalogEmpty = isSparepart ? allSpareparts.isEmpty : allJasa.isEmpty;
+    final q = _query.trim().toLowerCase();
+    final spareparts = q.isEmpty
+        ? allSpareparts
+        : allSpareparts.where((p) => p.nama.toLowerCase().contains(q)).toList();
+    final jasaList = q.isEmpty
+        ? allJasa
+        : allJasa.where((j) => j.nama.toLowerCase().contains(q)).toList();
     final isEmpty = isSparepart ? spareparts.isEmpty : jasaList.isEmpty;
 
     return Scaffold(
@@ -177,16 +190,65 @@ class _SparepartScreenState extends State<SparepartScreen> {
               Expanded(child: _tabButton('jasa', 'Jasa')),
             ],
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 12),
+          if (!catalogEmpty) ...[
+            TextField(
+              controller: _searchController,
+              onChanged: (v) => setState(() => _query = v),
+              decoration: InputDecoration(
+                hintText: isSparepart ? 'Cari sparepart...' : 'Cari jasa...',
+                prefixIcon: const Icon(
+                  Icons.search,
+                  size: 20,
+                  color: AppColors.textSecondary,
+                ),
+                suffixIcon: _query.isEmpty
+                    ? null
+                    : IconButton(
+                        icon: const Icon(Icons.close, size: 18),
+                        onPressed: () => setState(() {
+                          _query = '';
+                          _searchController.clear();
+                        }),
+                      ),
+                filled: true,
+                fillColor: Colors.white,
+                isDense: true,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 13,
+                  vertical: 12,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(13),
+                  borderSide: const BorderSide(
+                    color: Color(0xFFE1E6EF),
+                    width: 1.5,
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(13),
+                  borderSide: const BorderSide(
+                    color: Color(0xFFE1E6EF),
+                    width: 1.5,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+          ],
           if (_showForm) _buildForm(),
           if (isEmpty)
             EmptyState(
-              icon: isSparepart
-                  ? Icons.inventory_2_outlined
-                  : Icons.build_outlined,
-              message: isSparepart
-                  ? 'Belum ada sparepart di katalog.\nTap tombol + untuk menambahkan.'
-                  : 'Belum ada jasa di katalog.\nTap tombol + untuk menambahkan.',
+              icon: catalogEmpty
+                  ? (isSparepart
+                        ? Icons.inventory_2_outlined
+                        : Icons.build_outlined)
+                  : Icons.search_off,
+              message: catalogEmpty
+                  ? (isSparepart
+                        ? 'Belum ada sparepart di katalog.\nTap tombol + untuk menambahkan.'
+                        : 'Belum ada jasa di katalog.\nTap tombol + untuk menambahkan.')
+                  : 'Tidak ditemukan hasil untuk "$_query".',
             )
           else
             Container(

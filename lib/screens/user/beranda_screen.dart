@@ -36,6 +36,8 @@ class BerandaScreen extends StatelessWidget {
         subtitle: 'Ayo rawat motormu hari ini',
         showLogo: true,
         showBell: true,
+        hasNotification: alerts.isNotEmpty,
+        onBellTap: () => _showNotifications(context, alerts),
         onSwitchRole: () {
           context.read<AppProvider>().setRole(UserRole.bengkel);
           showDemoSnackbar(context, 'Berpindah ke Tampilan Bengkel');
@@ -46,7 +48,9 @@ class BerandaScreen extends StatelessWidget {
         children: [
           if (active != null) _ActiveServiceCard(service: active),
           if (active != null) const SizedBox(height: 18),
-          _AjukanServiceButton(vehId: app.vehicles.isNotEmpty ? app.vehicles.first.id : null),
+          _AjukanServiceButton(
+            vehId: app.vehicles.isNotEmpty ? app.vehicles.first.id : null,
+          ),
           const SizedBox(height: 18),
           _SectionHeader(
             title: 'Perawatan Perlu Dicek',
@@ -55,7 +59,9 @@ class BerandaScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (_) => PerawatanRutinScreen(vehicleId: app.vehicles.first.id)),
+                    builder: (_) =>
+                        PerawatanRutinScreen(vehicleId: app.vehicles.first.id),
+                  ),
                 );
               }
             },
@@ -64,8 +70,10 @@ class BerandaScreen extends StatelessWidget {
           if (topAlerts.isEmpty)
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 8),
-              child: Text('Semua kendaraan dalam kondisi aman.',
-                  style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
+              child: Text(
+                'Semua kendaraan dalam kondisi aman.',
+                style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+              ),
             )
           else
             Column(
@@ -79,14 +87,22 @@ class BerandaScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(14),
                     child: InkWell(
                       borderRadius: BorderRadius.circular(14),
-                      onTap: () => Navigator.push(context,
-                          MaterialPageRoute(builder: (_) => VehicleDetailScreen(vehicleId: vehicle.id))),
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              VehicleDetailScreen(vehicleId: vehicle.id),
+                        ),
+                      ),
                       child: Container(
                         decoration: BoxDecoration(
                           border: Border.all(color: AppColors.cardBorder),
                           borderRadius: BorderRadius.circular(14),
                         ),
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 12,
+                        ),
                         child: Row(
                           children: [
                             Container(
@@ -96,28 +112,53 @@ class BerandaScreen extends StatelessWidget {
                                 color: AppColors.surfaceTint,
                                 borderRadius: BorderRadius.circular(12),
                               ),
-                              child: const Icon(Icons.build_outlined, color: AppColors.primary, size: 20),
+                              child: const Icon(
+                                Icons.build_outlined,
+                                color: AppColors.primary,
+                                size: 20,
+                              ),
                             ),
                             const SizedBox(width: 12),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(m.nama,
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.w700, fontSize: 13.5, color: AppColors.textPrimary)),
+                                  Text(
+                                    m.nama,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 13.5,
+                                      color: AppColors.textPrimary,
+                                    ),
+                                  ),
                                   const SizedBox(height: 1),
-                                  Text('${vehicle.nama} · ${m.nextLabel}',
-                                      style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                                  Text(
+                                    '${vehicle.nama} · ${m.nextLabel}',
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: AppColors.textSecondary,
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
-                              decoration:
-                                  BoxDecoration(color: m.badge.bg, borderRadius: BorderRadius.circular(999)),
-                              child: Text(m.badge.label,
-                                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: m.badge.fg)),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 9,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: m.badge.bg,
+                                borderRadius: BorderRadius.circular(999),
+                              ),
+                              child: Text(
+                                m.badge.label,
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w700,
+                                  color: m.badge.fg,
+                                ),
+                              ),
                             ),
                           ],
                         ),
@@ -135,17 +176,185 @@ class BerandaScreen extends StatelessWidget {
           const SizedBox(height: 11),
           Column(
             children: app.vehicles
-                .map((v) => Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: VehicleCard(
-                        vehicle: v,
-                        onTap: () => Navigator.push(
-                            context, MaterialPageRoute(builder: (_) => VehicleDetailScreen(vehicleId: v.id))),
+                .map(
+                  (v) => Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: VehicleCard(
+                      vehicle: v,
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => VehicleDetailScreen(vehicleId: v.id),
+                        ),
                       ),
-                    ))
+                    ),
+                  ),
+                )
                 .toList(),
           ),
         ],
+      ),
+    );
+  }
+
+  void _showNotifications(
+    BuildContext context,
+    List<MapEntry<Vehicle, MaintComputed>> alerts,
+  ) {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) => DraggableScrollableSheet(
+        initialChildSize: 0.6,
+        minChildSize: 0.3,
+        maxChildSize: 0.85,
+        expand: false,
+        builder: (context, scrollController) {
+          return Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            child: Column(
+              children: [
+                const SizedBox(height: 10),
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE1E6EF),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                ),
+                const Padding(
+                  padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Notifikasi Perawatan',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 16,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                  ),
+                ),
+                const Divider(height: 1, color: AppColors.divider),
+                Expanded(
+                  child: alerts.isEmpty
+                      ? const Center(
+                          child: Text(
+                            'Tidak ada perawatan yang perlu dicek.',
+                            style: TextStyle(color: AppColors.textSecondary),
+                          ),
+                        )
+                      : ListView(
+                          controller: scrollController,
+                          padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+                          children: alerts.map((entry) {
+                            final vehicle = entry.key;
+                            final m = entry.value;
+                            return Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                onTap: () {
+                                  Navigator.pop(sheetContext);
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => VehicleDetailScreen(
+                                        vehicleId: vehicle.id,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 13,
+                                  ),
+                                  decoration: const BoxDecoration(
+                                    border: Border(
+                                      bottom: BorderSide(
+                                        color: AppColors.divider,
+                                      ),
+                                    ),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        width: 40,
+                                        height: 40,
+                                        decoration: BoxDecoration(
+                                          color: AppColors.surfaceTint,
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                        ),
+                                        child: const Icon(
+                                          Icons.build_outlined,
+                                          color: AppColors.primary,
+                                          size: 20,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              m.nama,
+                                              style: const TextStyle(
+                                                fontWeight: FontWeight.w700,
+                                                fontSize: 13.5,
+                                                color: AppColors.textPrimary,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 1),
+                                            Text(
+                                              '${vehicle.nama} · ${m.nextLabel}',
+                                              style: const TextStyle(
+                                                fontSize: 12,
+                                                color: AppColors.textSecondary,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 9,
+                                          vertical: 4,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: m.badge.bg,
+                                          borderRadius: BorderRadius.circular(
+                                            999,
+                                          ),
+                                        ),
+                                        child: Text(
+                                          m.badge.label,
+                                          style: TextStyle(
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.w700,
+                                            color: m.badge.fg,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
@@ -164,13 +373,28 @@ class _SectionHeader extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.baseline,
       textBaseline: TextBaseline.alphabetic,
       children: [
-        Text(title,
-            style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15.5, color: AppColors.textPrimary)),
+        Text(
+          title,
+          style: const TextStyle(
+            fontWeight: FontWeight.w800,
+            fontSize: 15.5,
+            color: AppColors.textPrimary,
+          ),
+        ),
         TextButton(
           onPressed: onLihatSemua,
-          style: TextButton.styleFrom(padding: EdgeInsets.zero, minimumSize: Size.zero),
-          child: const Text('Lihat semua',
-              style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w700, fontSize: 12.5)),
+          style: TextButton.styleFrom(
+            padding: EdgeInsets.zero,
+            minimumSize: Size.zero,
+          ),
+          child: const Text(
+            'Lihat semua',
+            style: TextStyle(
+              color: AppColors.primary,
+              fontWeight: FontWeight.w700,
+              fontSize: 12.5,
+            ),
+          ),
         ),
       ],
     );
@@ -205,18 +429,33 @@ class _AjukanServiceButton extends StatelessWidget {
                   color: AppColors.primaryTint(0.12),
                   borderRadius: BorderRadius.circular(14),
                 ),
-                child: const Icon(Icons.build_circle_outlined, color: AppColors.primary, size: 24),
+                child: const Icon(
+                  Icons.build_circle_outlined,
+                  color: AppColors.primary,
+                  size: 24,
+                ),
               ),
               const SizedBox(width: 13),
               const Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Ajukan Service',
-                        style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: AppColors.textPrimary)),
+                    Text(
+                      'Ajukan Service',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 15,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
                     SizedBox(height: 1),
-                    Text('Booking servis ke bengkel pilihanmu',
-                        style: TextStyle(fontSize: 12.5, color: AppColors.textSecondary)),
+                    Text(
+                      'Booking servis ke bengkel pilihanmu',
+                      style: TextStyle(
+                        fontSize: 12.5,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -259,7 +498,11 @@ class _ActiveServiceCard extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(18),
         onTap: () => Navigator.push(
-            context, MaterialPageRoute(builder: (_) => HistoriDetailScreen(serviceId: service.id))),
+          context,
+          MaterialPageRoute(
+            builder: (_) => HistoriDetailScreen(serviceId: service.id),
+          ),
+        ),
         child: Container(
           decoration: BoxDecoration(
             gradient: const LinearGradient(
@@ -276,29 +519,49 @@ class _ActiveServiceCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text('SERVICE BERJALAN',
-                      style: TextStyle(
-                          fontSize: 11.5,
-                          letterSpacing: 0.4,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white70)),
+                  const Text(
+                    'SERVICE BERJALAN',
+                    style: TextStyle(
+                      fontSize: 11.5,
+                      letterSpacing: 0.4,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white70,
+                    ),
+                  ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.22),
-                        borderRadius: BorderRadius.circular(999)),
-                    child: Text(badge.label,
-                        style: const TextStyle(
-                            color: Colors.white, fontSize: 11.5, fontWeight: FontWeight.w700)),
+                      color: Colors.white.withValues(alpha: 0.22),
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                    child: Text(
+                      badge.label,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 11.5,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
                   ),
                 ],
               ),
               const SizedBox(height: 9),
-              Text(service.jenis,
-                  style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 18, color: Colors.white)),
+              Text(
+                service.jenis,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 18,
+                  color: Colors.white,
+                ),
+              ),
               const SizedBox(height: 3),
-              Text(service.vehLabel,
-                  style: const TextStyle(fontSize: 12.5, color: Colors.white70)),
+              Text(
+                service.vehLabel,
+                style: const TextStyle(fontSize: 12.5, color: Colors.white70),
+              ),
               const SizedBox(height: 15),
               ClipRRect(
                 borderRadius: BorderRadius.circular(99),
@@ -310,8 +573,10 @@ class _ActiveServiceCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 7),
-              Text(_stepTextMap[service.status] ?? '',
-                  style: const TextStyle(fontSize: 11.5, color: Colors.white70)),
+              Text(
+                _stepTextMap[service.status] ?? '',
+                style: const TextStyle(fontSize: 11.5, color: Colors.white70),
+              ),
             ],
           ),
         ),

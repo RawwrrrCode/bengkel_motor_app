@@ -38,6 +38,15 @@ class AppProvider extends ChangeNotifier {
 
       _role = UserRole.values.byName(json['role'] as String);
       _roleChosen = json['roleChosen'] as bool;
+      if (json['vehicles'] != null) {
+        _vehicles
+          ..clear()
+          ..addAll(
+            (json['vehicles'] as List).map(
+              (e) => Vehicle.fromJson(e as Map<String, dynamic>),
+            ),
+          );
+      }
       _spareparts
         ..clear()
         ..addAll(
@@ -81,6 +90,7 @@ class AppProvider extends ChangeNotifier {
     final json = {
       'role': _role.name,
       'roleChosen': _roleChosen,
+      'vehicles': _vehicles.map((v) => v.toJson()).toList(),
       'spareparts': _spareparts.map((p) => p.toJson()).toList(),
       'jasaList': _jasaList.map((j) => j.toJson()).toList(),
       'bengkels': _bengkels.map((b) => b.toJson()).toList(),
@@ -243,11 +253,32 @@ class AppProvider extends ChangeNotifier {
     _persist();
   }
 
-  void rejectRequest(String id) {
+  /// Used by the bengkel side to reject an incoming request, optionally
+  /// recording why so the customer can see it in their histori.
+  void rejectRequest(String id, {String alasan = ''}) {
     final index = _serviceRequests.indexWhere((s) => s.id == id);
     if (index == -1) return;
     _serviceRequests[index] = _serviceRequests[index].copyWith(
       status: ServiceStatus.batal,
+      alasanBatal: alasan.isEmpty ? 'Ditolak oleh bengkel' : alasan,
+    );
+    notifyListeners();
+    _persist();
+  }
+
+  /// Used by the customer to cancel their own still-pending request. Only
+  /// allowed before the bengkel has started working on it.
+  void cancelRequest(String id) {
+    final index = _serviceRequests.indexWhere((s) => s.id == id);
+    if (index == -1) return;
+    final current = _serviceRequests[index];
+    if (current.status != ServiceStatus.menunggu &&
+        current.status != ServiceStatus.dikonfirmasi) {
+      return;
+    }
+    _serviceRequests[index] = current.copyWith(
+      status: ServiceStatus.batal,
+      alasanBatal: 'Dibatalkan oleh pelanggan',
     );
     notifyListeners();
     _persist();
@@ -357,6 +388,39 @@ class AppProvider extends ChangeNotifier {
 
   void deleteJasa(String id) {
     _jasaList.removeWhere((j) => j.id == id);
+    notifyListeners();
+    _persist();
+  }
+
+  /// Adds a new vehicle with no maintenance schedule yet — the user can
+  /// still book service for it, it just won't show up under "Perawatan
+  /// Perlu Dicek" until maintenance history exists.
+  void addVehicle({
+    required String nama,
+    required String merk,
+    required String plat,
+    required int tahun,
+    required String warna,
+    required String tipe,
+    required int cc,
+    required int km,
+  }) {
+    if (nama.isEmpty || plat.isEmpty) return;
+    final id = _nextId('v', _vehicles.map((v) => v.id));
+    _vehicles.add(
+      Vehicle(
+        id: id,
+        nama: nama,
+        merk: merk,
+        plat: plat,
+        tahun: tahun,
+        warna: warna,
+        tipe: tipe,
+        cc: cc,
+        km: km,
+        maint: const [],
+      ),
+    );
     notifyListeners();
     _persist();
   }

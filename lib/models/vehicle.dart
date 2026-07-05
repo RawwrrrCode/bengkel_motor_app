@@ -50,6 +50,22 @@ class MaintItem {
     required this.lastLabel,
   });
 
+  Map<String, dynamic> toJson() => {
+    'nama': nama,
+    'intervalKm': intervalKm,
+    'intervalBulan': intervalBulan,
+    'lastKm': lastKm,
+    'lastLabel': lastLabel,
+  };
+
+  factory MaintItem.fromJson(Map<String, dynamic> json) => MaintItem(
+    nama: json['nama'] as String,
+    intervalKm: json['intervalKm'] as int,
+    intervalBulan: json['intervalBulan'] as int,
+    lastKm: json['lastKm'] as int,
+    lastLabel: json['lastLabel'] as String,
+  );
+
   MaintComputed compute(int currentKm) {
     final nextKm = lastKm + intervalKm;
     final remainingKm = nextKm - currentKm;
@@ -72,17 +88,26 @@ class MaintItem {
       case MaintStatus.lewat:
         barColor = AppColors.lewatBar;
         badge = const MaintBadge(
-            label: 'Terlewat', bg: AppColors.lewatBg, fg: AppColors.lewatFg);
+          label: 'Terlewat',
+          bg: AppColors.lewatBg,
+          fg: AppColors.lewatFg,
+        );
         break;
       case MaintStatus.segera:
         barColor = AppColors.segeraBar;
         badge = const MaintBadge(
-            label: 'Segera', bg: AppColors.segeraBg, fg: AppColors.segeraFg);
+          label: 'Segera',
+          bg: AppColors.segeraBg,
+          fg: AppColors.segeraFg,
+        );
         break;
       case MaintStatus.aman:
         barColor = AppColors.amanBar;
         badge = const MaintBadge(
-            label: 'Aman', bg: AppColors.amanBg, fg: AppColors.amanFg);
+          label: 'Aman',
+          bg: AppColors.amanBg,
+          fg: AppColors.amanFg,
+        );
         break;
     }
 
@@ -135,4 +160,32 @@ class Vehicle {
 
   int get dueCount =>
       computeMaint().where((m) => m.status != MaintStatus.aman).length;
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'nama': nama,
+    'merk': merk,
+    'plat': plat,
+    'tahun': tahun,
+    'warna': warna,
+    'tipe': tipe,
+    'cc': cc,
+    'km': km,
+    'maint': maint.map((m) => m.toJson()).toList(),
+  };
+
+  factory Vehicle.fromJson(Map<String, dynamic> json) => Vehicle(
+    id: json['id'] as String,
+    nama: json['nama'] as String,
+    merk: json['merk'] as String,
+    plat: json['plat'] as String,
+    tahun: json['tahun'] as int,
+    warna: json['warna'] as String,
+    tipe: json['tipe'] as String,
+    cc: json['cc'] as int,
+    km: json['km'] as int,
+    maint: (json['maint'] as List)
+        .map((m) => MaintItem.fromJson(m as Map<String, dynamic>))
+        .toList(),
+  );
 }

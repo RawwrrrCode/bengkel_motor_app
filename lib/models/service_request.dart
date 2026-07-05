@@ -155,6 +155,7 @@ class ServiceRequest {
   final String saran;
   final String saranBulan;
   final int rating;
+  final String alasanBatal;
 
   const ServiceRequest({
     required this.id,
@@ -173,6 +174,7 @@ class ServiceRequest {
     this.saran = '',
     this.saranBulan = '',
     this.rating = 0,
+    this.alasanBatal = '',
   });
 
   ServiceRequest copyWith({
@@ -182,6 +184,7 @@ class ServiceRequest {
     List<ServiceItem>? items,
     int? biaya,
     int? rating,
+    String? alasanBatal,
   }) {
     return ServiceRequest(
       id: id,
@@ -200,6 +203,7 @@ class ServiceRequest {
       saran: saran ?? this.saran,
       saranBulan: saranBulan ?? this.saranBulan,
       rating: rating ?? this.rating,
+      alasanBatal: alasanBatal ?? this.alasanBatal,
     );
   }
 
@@ -220,6 +224,7 @@ class ServiceRequest {
     'saran': saran,
     'saranBulan': saranBulan,
     'rating': rating,
+    'alasanBatal': alasanBatal,
   };
 
   factory ServiceRequest.fromJson(Map<String, dynamic> json) => ServiceRequest(
@@ -241,5 +246,6 @@ class ServiceRequest {
     saran: json['saran'] as String,
     saranBulan: json['saranBulan'] as String,
     rating: json['rating'] as int? ?? 0,
+    alasanBatal: json['alasanBatal'] as String? ?? '',
   );
 }
